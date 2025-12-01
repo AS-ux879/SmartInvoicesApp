@@ -6,7 +6,9 @@
   <title>📝 تسجيل مستخدم جديد - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
   
+  <!-- استيراد ملف تهيئة Firebase كنظام وحدة -->
   <script type="module" src="firebase.js"></script>
+  <script type="module" src="notification.js"></script>
 </head>
 <body>
   <div class="container">
@@ -29,9 +31,12 @@
       <button type="submit" id="registerBtn">تسجيل</button>
     </form>
 
-    <p id="haveAccount">لديك حساب؟ <a href="login.html" id="loginLink">تسجيل الدخول</a></p>
+    <p id="haveAccount">لديك حساب؟ <a href="index.html" id="loginLink">تسجيل الدخول</a></p>
   </div>
   
+  <div id="notificationContainer"></div>
+  
+  <!-- استيراد منطق التسجيل كنظام وحدة -->
   <script type="module" src="register.js"></script>
 </body>
 </html>
