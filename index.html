@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
 
+  <!-- استيراد ملف تهيئة Firebase كنظام وحدة -->
   <script type="module" src="firebase.js"></script>
+  <script type="module" src="notification.js"></script>
 
   <script>
     if ('serviceWorker' in navigator) {
@@ -35,7 +37,10 @@
 
     <p id="noAccount">ليس لديك حساب؟ <a href="register.html" id="registerLink">تسجيل جديد</a></p>
   </div>
+  
+  <div id="notificationContainer"></div>
 
+  <!-- استيراد منطق تسجيل الدخول كنظام وحدة -->
   <script type="module" src="login.js"></script>
 </body>
 </html>
