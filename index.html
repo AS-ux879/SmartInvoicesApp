@@ -1,29 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Invoices | Login</title>
+  <title>🔐 تسجيل الدخول - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-  }
-</script>
+
+  <script type="module" src="firebase.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+  </script>
 </head>
 <body>
   <div class="container">
-    <h1>Smart Invoices</h1>
+    <div class="lang-switch">
+      <button id="langBtn">🌐 English</button>
+    </div>
+
+    <h1 id="title">🔐 تسجيل الدخول</h1>
+
     <form id="loginForm">
-      <label>Email</label>
-      <input type="email" id="loginEmail" required>
-      <label>Password</label>
-      <input type="password" id="loginPassword" required>
-      <button type="submit">Login</button>
-      <p>Don't have an account? <a href="register.html">Register here</a></p>
+      <label id="labelEmail" for="email">البريد الإلكتروني:</label>
+      <input type="email" id="email" placeholder="example@email.com" required>
+
+      <label id="labelPassword" for="password">كلمة المرور:</label>
+      <input type="password" id="password" placeholder="•••••••" required>
+
+      <button type="submit" id="loginBtn">دخول</button>
     </form>
+
+    <p id="noAccount">ليس لديك حساب؟ <a href="register.html" id="registerLink">تسجيل جديد</a></p>
   </div>
-  <script src="auth.js"></script>
+
+  <script type="module" src="login.js"></script>
 </body>
 </html>
