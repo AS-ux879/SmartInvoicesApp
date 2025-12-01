@@ -1,51 +1,91 @@
+/* ======================= */
+/*  styles.css             */
+/* ======================= */
+
 body {
-  font-family: 'Tajawal', sans-serif;
-  background-color: #f6f7fb;
-  color: #333;
-  text-align: center;
-  direction: rtl;
+  /* الخطوط والأساس */
+  font-family: 'Tajawal', sans-serif;
+  background-color: #f6f7fb;
+  color: #333;
+  text-align: center;
+  direction: rtl;
 }
 
 .container {
-  max-width: 700px;
-  margin: 40px auto;
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #ccc;
+  /* هيكل الصفحة الرئيسي */
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
 }
 
 input, button {
-  margin: 5px;
-  padding: 10px;
-  width: 90%;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  /* حقول الإدخال والأزرار العامة */
+  margin: 5px;
+  padding: 10px;
+  width: 90%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 button {
-  background-color: #2b5b7b;
-  color: white;
-  cursor: pointer;
-  transition: 0.3s;
+  /* تنسيق الأزرار الأساسية */
+  background-color: #2b5b7b; /* أزرق داكن */
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 button:hover {
-  background-color: #1f4159;
+  background-color: #1f4159;
 }
 
 table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-top: 15px;
+  /* تنسيق الجداول */
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 15px;
 }
 
 th, td {
-  padding: 8px;
-  border: 1px solid #ccc;
+  padding: 8px;
+  border: 1px solid #ccc;
 }
 
 .logout-btn {
-  margin-top: 15px;
-  background-color: #b22a2a;
+  /* زر تسجيل الخروج */
+  margin-top: 15px;
+  background-color: #b22a2a; /* أحمر مميز */
+}
+
+
+/* ------------------------------------------- */
+/* تنسيق زر تبديل اللغة (i18n)         */
+/* ------------------------------------------- */
+
+.lang-switch {
+    width: 100%;
+}
+
+.lang-switch button {
+    /* تنسيق الزر نفسه */
+    width: auto;
+    padding: 5px 10px;
+    background-color: transparent;
+    color: #2b5b7b;
+    border: 1px solid #2b5b7b;
+    font-size: 0.9em;
+    margin-bottom: 15px; /* مسافة تحت الزر */
+}
+
+/* وضع الزر في الزاوية اليسرى في حالة العربية (rtl) */
+html[dir="rtl"] .lang-switch {
+    text-align: left;
+}
+
+/* وضع الزر في الزاوية اليمنى في حالة الإنجليزية (ltr) */
+html[dir="ltr"] .lang-switch {
+    text-align: right;
 }
