@@ -3,16 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🔐 تسجيل الدخول - Smart Invoices</title>
+  <title id="pageTitle">🔐 تسجيل الدخول - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
-
-  <!-- إعداد Firebase -->
-  <script src="firebase-config.js"></script>
+  
+  <script type="module" src="firebase.js"></script> 
+  <script type="module" src="i18n_auth.js"></script> 
 </head>
 <body>
   <div class="container">
@@ -35,7 +30,6 @@
     <p id="noAccount">ليس لديك حساب؟ <a href="register.html" id="registerLink">تسجيل جديد</a></p>
   </div>
 
-  <!-- مهم جداً: اجعليه module -->
   <script type="module" src="login.js"></script>
 </body>
 </html>
