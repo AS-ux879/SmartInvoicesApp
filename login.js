@@ -1,73 +1,110 @@
-import { auth, signInWithEmailAndPassword } from "./firebase-config.js";
+// =======================
+//  login.js (Firebase Auth + Local i18n)
+// =======================
+
+// [تعديل مطلوب]: استيراد مثيل Firebase Auth من ملف firebase.js
+import { auth } from "./firebase.js";
+
+// [تعديل مطلوب]: استيراد دالة تسجيل الدخول من CDN
+import {
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
 
 document.addEventListener("DOMContentLoaded", () => {
-  const i18n = {
-    ar: {
-      title: "🔐 تسجيل الدخول",
-      email: "البريد الإلكتروني:",
-      password: "كلمة المرور:",
-      login: "دخول",
-      noAccount: "ليس لديك حساب؟",
-      register: "تسجيل جديد",
-      langBtn: "🌐 English",
-      success: "تم تسجيل الدخول بنجاح!",
-      fail: "بيانات الدخول غير صحيحة!"
-    },
-    en: {
-      title: "🔐 Login",
-      email: "Email:",
-      password: "Password:",
-      login: "Login",
-      noAccount: "Don't have an account?",
-      register: "Register",
-      langBtn: "🌐 العربية",
-      success: "Login successful!",
-      fail: "Incorrect credentials!"
-    }
-  };
+  const i18n = {
+    ar: {
+      title: "🔐 تسجيل الدخول",
+      email: "البريد الإلكتروني:",
+      password: "كلمة المرور:",
+      login: "دخول",
+      noAccount: "ليس لديك حساب؟",
+      register: "تسجيل جديد",
+      langBtn: "🌐 English",
+      success: "تم تسجيل الدخول بنجاح!",
+      fail: "بيانات الدخول غير صحيحة!"
+    },
+    en: {
+      title: "🔐 Login",
+      email: "Email:",
+      password: "Password:",
+      login: "Login",
+      noAccount: "Don't have an account?",
+      register: "Register",
+      langBtn: "🌐 العربية",
+      success: "Login successful!",
+      fail: "Incorrect credentials!"
+    }
+  };
 
-  let currentLang = localStorage.getItem("lang") || "ar";
+  let currentLang = localStorage.getItem("lang") || "ar";
 
-  function setLang(lang) {
-    const t = i18n[lang];
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+  function setLang(lang) {
+    const t = i18n[lang];
+    localStorage.setItem("lang", lang);
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
 
-    document.getElementById("title").textContent = t.title;
-    document.getElementById("labelEmail").textContent = t.email;
-    document.getElementById("labelPassword").textContent = t.password;
-    document.getElementById("loginBtn").textContent = t.login;
-    document.getElementById("noAccount").firstChild.textContent = t.noAccount + " ";
-    document.getElementById("registerLink").textContent = t.register;
-    document.getElementById("langBtn").textContent = t.langBtn;
+    // التأكد من وجود جميع العناصر في login.html
+    const titleElement = document.getElementById("title");
+    if (titleElement) titleElement.textContent = t.title;
 
-    localStorage.setItem("lang", lang);
-  }
+    const labelEmailElement = document.getElementById("labelEmail");
+    if (labelEmailElement) labelEmailElement.textContent = t.email;
 
-  document.getElementById("langBtn").addEventListener("click", () => {
-    currentLang = currentLang === "ar" ? "en" : "ar";
-    setLang(currentLang);
-  });
+    const labelPasswordElement = document.getElementById("labelPassword");
+    if (labelPasswordElement) labelPasswordElement.textContent = t.password;
 
-  setLang(currentLang);
+    const loginBtnElement = document.getElementById("loginBtn");
+    if (loginBtnElement) loginBtnElement.textContent = t.login;
 
-  // 🔥 تسجيل الدخول باستخدام Firebase (modular)
-  const form = document.getElementById("loginForm");
+    const noAccountElement = document.getElementById("noAccount");
+    if (noAccountElement) noAccountElement.firstChild.textContent = t.noAccount + " ";
+    
+    const registerLinkElement = document.getElementById("registerLink");
+    if (registerLinkElement) registerLinkElement.textContent = t.register;
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    const langBtnElement = document.getElementById("langBtn");
+    if (langBtnElement) langBtnElement.textContent = t.langBtn;
+  }
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  document.getElementById("langBtn").addEventListener("click", () => {
+    currentLang = currentLang === "ar" ? "en" : "ar";
+    setLang(currentLang);
+  });
 
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
+  setLang(currentLang);
 
-      alert(i18n[currentLang].success);
-      window.location.href = "dashboard.html";
+  const form = document.getElementById("loginForm");
 
-    } catch (error) {
-      alert(i18n[currentLang].fail + "\n" + error.message);
-    }
-  });
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    // [ملاحظة]: تم تغيير IDs حقول الإدخال إلى 'email' و 'password' في التعديلات السابقة.
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      // [إضافة مطلوبة وهامة]: حفظ بيانات المستخدم (UID) ليعمل dashboard.js
+      const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+        
+      localStorage.setItem("user", JSON.stringify({ 
+          // نحتفظ بالاسم المخزن من صفحة التسجيل، أو نستخدم جزء الإيميل كاسم افتراضي
+          name: storedUser.name || email.split('@')[0], 
+          email: userCredential.user.email, 
+          uid: userCredential.user.uid 
+      }));
+      // ----------------------------------------------------
+
+      alert(i18n[currentLang].success);
+      window.location.href = "dashboard.html";
+
+    } catch (error) {
+      console.error("Firebase Login Error:", error);
+      // عرض رسالة الخطأ المترجمة فقط
+      alert(i18n[currentLang].fail); 
+    }
+  });
 });
