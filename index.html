@@ -5,26 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📌 Smart Invoices</title>
 
-  <link rel="manifest" href="manifest.json">
+  <!-- Manifest -->
+  <link rel="manifest" href="/SmartInvoicesApp/manifest.json">
   <meta name="theme-color" content="#264653">
 
+  <!-- Register SW Automatically -->
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js")
-      .then(() => console.log("SW Registered"))
-      .catch(err => console.log("SW Failed", err));
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/SmartInvoicesApp/service-worker.js")
+        .then(() => console.log("SW Registered Successfully"))
+        .catch(err => console.log("SW Failed:", err));
+      });
     }
   </script>
 
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/SmartInvoicesApp/styles.css">
 </head>
 <body>
 
   <div class="container welcome">
     <h1>📊 Smart Invoices</h1>
     <p>إدارة فواتيرك بسهولة</p>
-    <button onclick="location.href='login.html'">تسجيل الدخول</button>
-    <button onclick="location.href='register.html'">إنشاء حساب</button>
+
+    <button onclick="location.href='/SmartInvoicesApp/login.html'">تسجيل الدخول</button>
+    <button onclick="location.href='/SmartInvoicesApp/register.html'">إنشاء حساب</button>
   </div>
 
 </body>
