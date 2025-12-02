@@ -9,7 +9,7 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-
 
 // ==== Firebase Config (استخدمي مشروعك) ====
 const firebaseConfig = {
-  apiKey: "AIzaSyBVAfj2LIYr7EMqhUySeazeqH-8bPebry0",
+  apiKey: "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA",
   authDomain: "smartinvoicesapp-ebb2c.firebaseapp.com",
   projectId: "smartinvoicesapp-ebb2c",
   storageBucket: "smartinvoicesapp-ebb2c.appspot.com",
