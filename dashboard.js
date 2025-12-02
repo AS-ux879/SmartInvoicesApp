@@ -1,102 +1,61 @@
 // ============================
-// Dashboard.js — FINAL WORKING VERSION
+// dashboard.js — FINAL OCR FIXED
 // ============================
 
 import { auth, db, storage } from "./firebase.js";
 import {
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged, signOut
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  query,
-  where
+  collection, addDoc, getDocs, deleteDoc, doc, query, where
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 import {
-  ref,
-  uploadBytes,
-  getDownloadURL
+  ref, uploadBytes, getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-// OCR API KEY (ضعِي المفتاح الصحيح هنا لاحقاً)
+// Google Vision API
 const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
-let currentUser = null;
+let currentUser;
 const invoiceList = document.getElementById("invoiceList");
 
+// التحقق من تسجيل الدخول
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return window.location.href = "login.html";
+  if (!user) return location.href = "login.html";
   currentUser = user;
   document.getElementById("userName").textContent = user.displayName || "مستخدم";
   loadInvoices();
 });
 
-// تحميل الفواتير
-async function loadInvoices() {
-  invoiceList.innerHTML = "";
-  const q = query(collection(db, "invoices"), where("userId", "==", currentUser.uid));
-  const snapshot = await getDocs(q);
-
-  snapshot.forEach(docSnap => {
-    const d = docSnap.data();
-    invoiceList.innerHTML += `
-      <tr>
-        <td>${d.name}</td>
-        <td>${d.amount}</td>
-        <td>${d.date}</td>
-        <td>${d.warranty || "-"}</td>
-        <td><a href="${d.imageUrl}" target="_blank">📄</a></td>
-        <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
-      </tr>`;
-  });
-}
-
-// حذف
-window.deleteInvoice = async (id) => {
-  if (!confirm("حذف؟")) return;
-  await deleteDoc(doc(db, "invoices", id));
-  loadInvoices();
-};
-
-// OCR تلقائي
+// تشغيل OCR تلقائياً عند رفع الصورة
 document.getElementById("invoiceImage").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  document.getElementById("invoiceName").value = "جاري التحليل...";
+  document.getElementById("invoiceName").value = "جـاري القراءة...";
   document.getElementById("invoiceAmount").value = "";
+  document.getElementById("invoiceDate").value = "";
 
-  const storageRef = ref(storage, `ocr_temp/${Date.now()}_${file.name}`);
-  await uploadBytes(storageRef, file);
-  const imageUrl = await getDownloadURL(storageRef);
+  const tempRef = ref(storage, `tempOCR/${Date.now()}_${file.name}`);
+  await uploadBytes(tempRef, file);
+  const imgUrl = await getDownloadURL(tempRef);
 
-  const text = await extractTextFromImage(imageUrl);
-  const result = extractInvoiceData(text);
-
-  document.getElementById("invoiceName").value = result.name;
-  document.getElementById("invoiceAmount").value = result.amount;
-  if (result.date !== "غير محدد") {
-    document.getElementById("invoiceDate").value =
-      new Date(result.date).toISOString().split("T")[0];
-  }
+  const text = await runOCR(imgUrl);
+  fillFields(text);
 });
 
-// حفظ
+// حفظ الفاتورة
 document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const file = document.getElementById("invoiceImage").files[0];
-  if (!file) return alert("اختر صورة");
+  if (!file) return alert("اختر صورة الفاتورة");
 
   const storageRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
   await uploadBytes(storageRef, file);
-  const imageUrl = await getDownloadURL(storageRef);
+  const imgUrl = await getDownloadURL(storageRef);
 
   await addDoc(collection(db, "invoices"), {
     userId: currentUser.uid,
@@ -104,43 +63,73 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
     amount: document.getElementById("invoiceAmount").value,
     date: document.getElementById("invoiceDate").value,
     warranty: document.getElementById("invoiceWarranty").value,
-    imageUrl,
-    createdAt: new Date()
+    imageUrl: imgUrl
   });
 
-  alert("تم حفظ الفاتورة");
+  alert("تم الحفظ بنجاح");
   loadInvoices();
-  document.getElementById("invoiceForm").reset();
 });
 
-// Vision OCR API
-async function extractTextFromImage(imageUrl) {
-  const r = await fetch(
+// OCR — Vision API
+async function runOCR(imageUrl) {
+  const response = await fetch(
     `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`,
     {
       method: "POST",
       body: JSON.stringify({
-        requests: [{
-          image: { source: { imageUri: imageUrl }},
-          features: [{ type: "TEXT_DETECTION" }]
-        }]
+        requests: [
+          {
+            image: { source: { imageUri: imageUrl } },
+            features: [{ type: "TEXT_DETECTION" }]
+          }
+        ]
       })
     }
   );
-  const data = await r.json();
-  return data?.responses?.[0]?.fullTextAnnotation?.text || "";
+
+  const json = await response.json();
+  return json?.responses?.[0]?.fullTextAnnotation?.text || "";
 }
 
-function extractInvoiceData(text) {
-  return {
-    name: text.split("\n")[0] || "فاتورة",
-    amount: (text.match(/\d+(\.\d+)?/) || ["0"])[0],
-    date: (text.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/) || ["غير محدد"])[0]
-  };
+// تعبئة الحقول تلقائياً
+function fillFields(text) {
+  const price = text.match(/\d{2,6}/)?.[0] || "";
+  const foundDate = text.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/)?.[0];
+
+  document.getElementById("invoiceName").value = text.split("\n")[0];
+  document.getElementById("invoiceAmount").value = price;
+  if (foundDate) {
+    document.getElementById("invoiceDate").value =
+      new Date(foundDate).toISOString().split("T")[0];
+  }
 }
 
-// خروج
+// عرض الفواتير
+async function loadInvoices() {
+  invoiceList.innerHTML = "";
+  const q = query(collection(db, "invoices"), where("userId", "==", currentUser.uid));
+  const s = await getDocs(q);
+  s.forEach(docSnap => {
+    const d = docSnap.data();
+    invoiceList.innerHTML += `
+      <tr>
+        <td>${d.name}</td>
+        <td>${d.amount}</td>
+        <td>${d.date}</td>
+        <td>${d.warranty}</td>
+        <td><a href="${d.imageUrl}" target="_blank">📄</a></td>
+        <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
+      </tr>
+    `;
+  });
+}
+
+window.deleteInvoice = async (id) => {
+  await deleteDoc(doc(db, "invoices", id));
+  loadInvoices();
+};
+
 window.logout = () => {
   signOut(auth);
-  window.location.href = "login.html";
+  location.href = "login.html";
 };
