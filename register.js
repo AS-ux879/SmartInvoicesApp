@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
 import { 
   doc, 
   setDoc 
@@ -23,14 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("password").value.trim();
 
     try {
-      // إنشاء حساب
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // حفظ الاسم على حساب Firebase
       await updateProfile(user, { displayName: name });
 
-      // إنشاء مستند للمستخدم في Firestore
       await setDoc(doc(db, "users", user.uid), {
         name,
         email,
@@ -39,9 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       alert("تم التسجيل بنجاح!");
       window.location.href = "login.html";
-
-    } catch (error) {
-      alert("حدث خطأ: " + error.message);
+    } 
+    catch (error) {
+      alert("خطأ: " + error.message);
     }
   });
 });
