@@ -6,16 +6,14 @@
   <title>📊 لوحة الفواتير - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-
   <div class="container">
-
     <h1>📊 لوحة الفواتير</h1>
     <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
 
     <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
-
       <label for="invoiceName">اسم الفاتورة:</label>
       <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
 
@@ -26,10 +24,10 @@
       <input type="date" id="invoiceDate" required>
 
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
+      <!-- الآن يمكن الرفع من الكاميرا أو الاستديو -->
       <input type="file" id="invoiceImage" accept="image/*" required>
 
       <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
-
     </form>
 
     <h2>🧾 قائمة الفواتير</h2>
@@ -48,12 +46,10 @@
     </table>
 
     <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
-
   </div>
 
   <!-- Firebase + Dashboard Logic -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="dashboard.js"></script>
-
 </body>
 </html>
