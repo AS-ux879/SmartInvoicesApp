@@ -5,27 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📊 لوحة الفواتير - Smart Invoices</title>
 
-  <!-- Manifest: ضروري لأجل PWA -->
-  <link rel="manifest" href="manifest.json">
+  <!-- CSS -->
+  <link rel="stylesheet" href="/SmartInvoicesApp/styles.css">
 
-  <!-- تثبيت على الجوال: أيقونة ولون الشريط -->
+  <!-- Manifest -->
+  <link rel="manifest" href="/SmartInvoicesApp/manifest.json">
   <meta name="theme-color" content="#264653">
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="styles.css">
-
-  <!-- Service Worker auto register -->
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("service-worker.js")
-          .then(() => console.log("SW Registered"))
-          .catch(err => console.log("SW Failed:", err));
-      });
+      navigator.serviceWorker.register("/SmartInvoicesApp/service-worker.js")
+        .then(() => console.log("Service Worker Registered"))
+        .catch(err => console.error("SW Error", err));
     }
   </script>
-
 </head>
+
 <body>
 
   <div class="container">
@@ -35,7 +31,7 @@
 
     <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
-
+      
       <label for="invoiceImage" id="labelImage">📷 صورة الفاتورة:</label>
       <input type="file" id="invoiceImage" accept="image/*" required>
 
@@ -75,8 +71,8 @@
   </div>
 
   <!-- Firebase + App Logic -->
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="dashboard.js"></script>
+  <script type="module" src="/SmartInvoicesApp/firebase.js"></script>
+  <script type="module" src="/SmartInvoicesApp/dashboard.js"></script>
 
 </body>
 </html>
