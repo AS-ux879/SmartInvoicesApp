@@ -25,7 +25,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
 // ضع مفتاح Google Vision هنا لاحقاً
-const VISION_API_KEY = "AIzaSyBVAfj2LIYr7EMqhUySeazeqH-8bPebry0";
+const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
 let currentUser = null;
 const invoiceList = document.getElementById("invoiceList");
