@@ -6,7 +6,7 @@
   <title>📊 لوحة الفواتير - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
 
-  <!-- مكتبات التصوير و PDF -->
+  <!-- مكتبات تصوير الشاشة وتصدير PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -58,9 +58,13 @@
       <button id="pdfBtn">📄 حفظ كـ PDF</button>
     </div>
 
-    <button class="logout-btn" id="logoutBtn" onclick="logout()">🚪 تسجيل الخروج</button>
+    <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
   </div>
 
-  <script src="dashboard.js"></script>
+  <!-- Firebase يجب أن يحمل أولاً -->
+  <script type="module" src="firebase.js"></script>
+
+  <!-- سكربت لوحة التحكم -->
+  <script type="module" src="dashboard.js"></script>
 </body>
 </html>
