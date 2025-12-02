@@ -7,58 +7,51 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
   <div class="container">
-    <div class="lang-switch">
-      <button id="langBtn">🌐 English</button>
-    </div>
-<p style="color:red">TEST v1</p>
-    <h1 id="title">📊 لوحة الفواتير</h1>
+
+    <h1>📊 لوحة الفواتير</h1>
     <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
 
+    <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
-      <label for="invoiceName" id="labelName">اسم الفاتورة:</label>
+
+      <label for="invoiceName">اسم الفاتورة:</label>
       <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
 
-      <label for="invoiceAmount" id="labelAmount">المبلغ (ريال):</label>
+      <label for="invoiceAmount">المبلغ (ريال):</label>
       <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
 
-      <label for="invoiceDate" id="labelDate">التاريخ:</label>
+      <label for="invoiceDate">التاريخ:</label>
       <input type="date" id="invoiceDate" required>
 
-      <label for="invoiceWarranty" id="labelWarranty">مدة الضمان (بالأشهر):</label>
-      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
-
-      <!-- زر التقاط أو رفع صورة الفاتورة -->
-      <label id="labelImage" for="invoiceImage">📷 أضف صورة الفاتورة:</label>
-
-      <input type="file"
-             id="invoiceImage"
-             accept="image/*"
-             capture="environment"
-             required>
+      <label for="invoiceImage">📷 صورة الفاتورة:</label>
+      <input type="file" id="invoiceImage" accept="image/*" capture="environment" required>
 
       <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
+
     </form>
 
-    <h2 id="listTitle">🧾 قائمة الفواتير</h2>
+    <h2>🧾 قائمة الفواتير</h2>
+
     <table border="1" width="100%">
       <thead>
         <tr>
-          <th id="thName">الاسم</th>
-          <th id="thAmount">المبلغ (ريال)</th>
-          <th id="thDate">التاريخ</th>
-          <th id="thWarranty">الضمان (أشهر)</th>
-          <th id="thImage">فاتورة</th>
-          <th id="thAction">إجراء</th>
+          <th>الاسم</th>
+          <th>المبلغ</th>
+          <th>التاريخ</th>
+          <th>صورة الفاتورة</th>
+          <th>إجراء</th>
         </tr>
       </thead>
       <tbody id="invoiceList"></tbody>
     </table>
 
     <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
+
   </div>
 
-  <!-- Firebase و OCR و Dashboard Logic -->
+  <!-- Firebase + Dashboard Logic -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="dashboard.js"></script>
 
