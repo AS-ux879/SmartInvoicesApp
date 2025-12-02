@@ -11,7 +11,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA",
   authDomain: "smartinvoicesapp-ebb2c.firebaseapp.com",
   projectId: "smartinvoicesapp-ebb2c",
-  storageBucket: "smartinvoicesapp-ebb2c.firebasestorage.app",
+storageBucket: "smartinvoicesapp-ebb2c.appspot.com",
   messagingSenderId: "665203531882",
   appId: "1:665203531882:web:e793ac17dc0f5b5d92aa13",
   measurementId: "G-YCB6R5HR28"
