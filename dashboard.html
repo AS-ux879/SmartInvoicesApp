@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📊 لوحة الفواتير - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- PWA Requirements -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#264653">
+  <link rel="icon" type="image/png" href="./icon-192.png">
+
 </head>
+
 <body>
 
   <div class="container">
@@ -14,10 +22,9 @@
     <p><span>مرحبًا</span> <span id="userName"></span> 👋</p>
 
     <form id="invoiceForm">
-      
-      <!-- رفع الصورة أولاً بشكل صحيح + required -->
+
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
-      <input type="file" id="invoiceImage" accept="image/*" required style="padding: 6px; background: #fff;">
+      <input type="file" id="invoiceImage" accept="image/*" required>
 
       <label for="invoiceName">اسم الفاتورة:</label>
       <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
@@ -32,7 +39,6 @@
       <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
       <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
-
     </form>
 
     <h2>🧾 قائمة الفواتير</h2>
@@ -57,6 +63,15 @@
 
   <script type="module" src="firebase.js"></script>
   <script type="module" src="dashboard.js"></script>
+
+  <!-- Register Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("Service Worker Registered"))
+        .catch(err => console.log("SW ERROR:", err));
+    }
+  </script>
 
 </body>
 </html>
