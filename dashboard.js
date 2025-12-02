@@ -1,5 +1,5 @@
 // ============================
-// dashboard.js — FINAL VERSION
+// dashboard.js — CLEANED + FIXED
 // ============================
 
 import { auth, db, storage } from "./firebase.js";
@@ -30,10 +30,10 @@ const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 let currentUser = null;
 const invoiceList = document.getElementById("invoiceList");
 
-// التحقق من تسجيل الدخول
+// التحقق من المستخدم
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    alert("الرجاء تسجيل الدخول أولاً");
+    alert("الرجاء تسجيل الدخول");
     window.location.href = "login.html";
     return;
   }
@@ -53,79 +53,70 @@ async function loadInvoices() {
 
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
-    const row = `
+    invoiceList.innerHTML += `
       <tr>
         <td>${data.name}</td>
         <td>${data.amount}</td>
         <td>${data.date}</td>
-        <td>${data.warranty}</td>
-        <td><a href="${data.imageUrl}" target="_blank">📄 عرض</a></td>
-        <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️ حذف</button></td>
+        <td><a href="${data.imageUrl}" target="_blank">عرض الصورة</a></td>
+        <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
-    invoiceList.innerHTML += row;
   });
 }
 
 // حذف فاتورة
 window.deleteInvoice = async (id) => {
-  if (!confirm("تأكيد حذف الفاتورة؟")) return;
+  if (!confirm("هل تريد حذف الفاتورة؟")) return;
 
   await deleteDoc(doc(db, "invoices", id));
-  await loadInvoices();
+  loadInvoices();
 };
 
-// رفع البيانات + OCR
+// رفع ومعالجة الفاتورة
 document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const fileInput = document.getElementById("invoiceImage");
-  if (!fileInput.files.length) {
-    alert("يرجى اختيار صورة الفاتورة");
+  const file = document.getElementById("invoiceImage").files[0];
+  if (!file) {
+    alert("اختر صورة الفاتورة أولاً");
     return;
   }
 
-  const file = fileInput.files[0];
-
   try {
-    // رفع الصورة للتخزين
     const storageRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(storageRef, file);
     const imageUrl = await getDownloadURL(storageRef);
 
-    // OCR استخراج النص
     const text = await extractTextFromImage(imageUrl);
-    const invoiceData = extractInvoiceData(text);
+    const data = extractInvoiceData(text);
 
-    // حفظ البيانات
     await addDoc(collection(db, "invoices"), {
       userId: currentUser.uid,
+      name: data.name,
+      amount: data.amount,
+      date: data.date,
       imageUrl,
-      name: invoiceData.name,
-      amount: invoiceData.amount,
-      date: invoiceData.date,
-      warranty: document.getElementById("invoiceWarranty").value,
       createdAt: new Date()
     });
 
-    alert("تم إضافة الفاتورة بنجاح!");
-    await loadInvoices();
+    alert("تمت الإضافة");
+    loadInvoices();
     document.getElementById("invoiceForm").reset();
 
   } catch (err) {
-    alert("خطأ أثناء إضافة الفاتورة: " + err.message);
+    alert("فشل الإضافة: " + err.message);
   }
 });
 
-// Google Vision OCR
+// OCR API
 async function extractTextFromImage(imageUrl) {
   const url = `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`;
+
   const body = {
-    requests: [
-      {
-        image: { source: { imageUri: imageUrl }},
-        features: [{ type: "TEXT_DETECTION" }]
-      }
-    ]
+    requests: [{
+      image: { source: { imageUri: imageUrl }},
+      features: [{ type: "TEXT_DETECTION" }]
+    }]
   };
 
   const res = await fetch(url, {
@@ -134,29 +125,18 @@ async function extractTextFromImage(imageUrl) {
   });
 
   const data = await res.json();
-  return data.responses?.[0]?.fullTextAnnotation?.text || "";
+  return data?.responses?.[0]?.fullTextAnnotation?.text || "";
 }
 
-// استخراج البيانات من النص
 function extractInvoiceData(text) {
   return {
     name: text.split("\n")[0] || "فاتورة",
-    amount: extractNumber(text) || 0,
-    date: extractDate(text) || new Date().toLocaleDateString("en-GB")
+    amount: (text.match(/\d+(\.\d+)?/) || [0])[0],
+    date: (text.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/) || ["غير محدد"])[0]
   };
 }
 
-function extractNumber(text) {
-  const match = text.match(/\d+(\.\d{1,2})?/);
-  return match ? match[0] : "";
-}
-
-function extractDate(text) {
-  const match = text.match(/\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b/);
-  return match ? match[0] : "";
-}
-
-// تسجيل خروج
+// خروج
 window.logout = () => {
   signOut(auth);
   window.location.href = "login.html";
