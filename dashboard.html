@@ -16,21 +16,20 @@
     <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
 
-      <!-- اختيار الصورة أولاً -->
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
-      <input type="file" id="invoiceImage" accept="image/*">
+      <input type="file" id="invoiceImage" accept="image/*" required>
 
       <label for="invoiceName">اسم الفاتورة:</label>
-      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال">
+      <input type="text" id="invoiceName" placeholder="جاري القراءة..." required>
 
       <label for="invoiceAmount">المبلغ (ريال):</label>
-      <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
+      <input type="number" id="invoiceAmount" placeholder="جاري القراءة..." required>
 
       <label for="invoiceDate">التاريخ:</label>
-      <input type="date" id="invoiceDate">
+      <input type="date" id="invoiceDate" required>
 
       <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
-      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
+      <input type="number" id="invoiceWarranty" placeholder="مثال: 12" required>
 
       <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
 
@@ -56,7 +55,6 @@
 
   </div>
 
-  <!-- Firebase + Dashboard Logic -->
   <script type="module" src="firebase.js"></script>
   <script type="module" src="dashboard.js"></script>
 
