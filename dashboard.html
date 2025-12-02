@@ -5,14 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📊 لوحة الفواتير - Smart Invoices</title>
 
-  <!-- CSS -->
+  <!-- Manifest: ضروري لأجل PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- تثبيت على الجوال: أيقونة ولون الشريط -->
+  <meta name="theme-color" content="#264653">
+
+  <!-- Styles -->
   <link rel="stylesheet" href="styles.css">
 
-  <!-- Manifest: مهم لعمل التطبيق كتطبيق جوال -->
-  <link rel="manifest" href="/SmartInvoicesApp/manifest.json">
-
-  <!-- لون شريط المتصفح للتطبيق -->
-  <meta name="theme-color" content="#264653">
+  <!-- Service Worker auto register -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("service-worker.js")
+          .then(() => console.log("SW Registered"))
+          .catch(err => console.log("SW Failed:", err));
+      });
+    }
+  </script>
 
 </head>
 <body>
@@ -24,7 +35,7 @@
 
     <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
-      
+
       <label for="invoiceImage" id="labelImage">📷 صورة الفاتورة:</label>
       <input type="file" id="invoiceImage" accept="image/*" required>
 
