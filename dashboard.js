@@ -1,3 +1,14 @@
+// ============================
+// Dashboard.js — FINAL VERSION (Cloud Storage Enabled)
+// ============================
+
+import { storage } from "./firebase.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
@@ -6,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // الترجمات
   const i18n = {
     ar: {
       title: "📊 لوحة الفواتير",
@@ -89,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   setLang(currentLang);
 
-  // === نظام الفواتير ===
+  // === Invoice System ===
   const form = document.getElementById("invoiceForm");
   const list = document.getElementById("invoiceList");
   let invoices = JSON.parse(localStorage.getItem("invoices")) || [];
@@ -114,6 +124,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // رفع الصورة إلى Firebase Storage
+  async function uploadToStorage(file, invoiceName) {
+    const fileRef = ref(storage, "invoices/" + Date.now() + "-" + invoiceName);
+    await uploadBytes(fileRef, file);
+    return await getDownloadURL(fileRef);
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -122,35 +139,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const date = document.getElementById("invoiceDate").value.trim();
     const warranty = document.getElementById("invoiceWarranty").value.trim();
     const fileInput = document.getElementById("invoiceImage");
-    let imageBase64 = "";
-
-    if (!name || !amount || !date || !warranty) {
-      alert("يرجى تعبئة جميع الحقول قبل الإضافة.");
-      return;
-    }
+    let imageURL = "";
 
     if (fileInput.files.length > 0) {
       const file = fileInput.files[0];
-      imageBase64 = await toBase64(file);
+      imageURL = await uploadToStorage(file, name);
     }
 
-    invoices.push({ name, amount, date, warranty, image: imageBase64 });
+    invoices.push({ name, amount, date, warranty, image: imageURL });
     saveInvoices();
     renderInvoices();
     form.reset();
+
+    alert(currentLang === "ar" ? "تم إضافة الفاتورة بنجاح!" : "Invoice added successfully!");
   });
 
   renderInvoices();
 
   window.deleteInvoice = (index) => {
-    if (confirm("هل أنت متأكد من حذف هذه الفاتورة؟")) {
+    if (confirm(currentLang === "ar" ? "هل أنت متأكد من حذف هذه الفاتورة؟" : "Are you sure you want to delete this invoice?")) {
       invoices.splice(index, 1);
       saveInvoices();
       renderInvoices();
     }
   };
 
-  // تصوير الفواتير
   document.getElementById("captureBtn").addEventListener("click", async () => {
     const table = document.querySelector("table");
     const canvas = await html2canvas(table);
@@ -160,7 +173,6 @@ document.addEventListener("DOMContentLoaded", () => {
     link.click();
   });
 
-  // حفظ PDF
   document.getElementById("pdfBtn").addEventListener("click", () => {
     const element = document.querySelector("table");
     const opt = {
@@ -173,15 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
     html2pdf().from(element).set(opt).save();
   });
 });
-
-function toBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-  });
-}
 
 function logout() {
   localStorage.removeItem("user");
