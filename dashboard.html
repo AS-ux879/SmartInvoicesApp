@@ -6,18 +6,18 @@
   <title>📊 لوحة الفواتير - Smart Invoices</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="./styles.css">
 
-  <!-- Manifest (لتثبيت التطبيق كـ APK / PWA) -->
-  <link rel="manifest" href="manifest.json">
+  <!-- Manifest -->
+  <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#264653">
 
   <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
+      navigator.serviceWorker.register("./service-worker.js")
         .then(() => console.log("Service Worker Registered"))
-        .catch(err => console.error("Service Worker Failed:", err));
+        .catch(err => console.error("SW Error:", err));
     }
   </script>
 </head>
@@ -27,40 +27,40 @@
   <div class="container">
 
     <h1 id="title">📊 لوحة الفواتير</h1>
-    <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
+    <p><span id="greet">مرحبًا</span> <span id="userName">...</span> 👋</p>
 
     <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
       
-      <label for="invoiceImage" id="labelImage">📷 صورة الفاتورة:</label>
+      <label for="invoiceImage">📷 صورة الفاتورة:</label>
       <input type="file" id="invoiceImage" accept="image/*" required>
 
-      <label for="invoiceName" id="labelName">اسم الفاتورة:</label>
+      <label for="invoiceName">اسم الفاتورة:</label>
       <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
 
-      <label for="invoiceAmount" id="labelAmount">المبلغ (ريال):</label>
+      <label for="invoiceAmount">المبلغ (ريال):</label>
       <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
 
-      <label for="invoiceDate" id="labelDate">التاريخ:</label>
+      <label for="invoiceDate">التاريخ:</label>
       <input type="date" id="invoiceDate" required>
 
-      <label for="invoiceWarranty" id="labelWarranty">مدة الضمان (بالأشهر):</label>
+      <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
       <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
-      <button type="submit" id="addBtn">➕ إضافة الفواتير</button>
+      <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
     </form>
 
-    <h2 id="listTitle">🧾 قائمة الفواتير</h2>
+    <h2>🧾 قائمة الفواتير</h2>
 
     <table border="1" width="100%">
       <thead>
         <tr>
-          <th id="thName">الاسم</th>
-          <th id="thAmount">المبلغ</th>
-          <th id="thDate">التاريخ</th>
-          <th id="thWarranty">الضمان</th>
-          <th id="thImage">الفاتورة</th>
-          <th id="thAction">إجراء</th>
+          <th>الاسم</th>
+          <th>المبلغ</th>
+          <th>التاريخ</th>
+          <th>الضمان</th>
+          <th>الفاتورة</th>
+          <th>إجراء</th>
         </tr>
       </thead>
       <tbody id="invoiceList"></tbody>
@@ -71,8 +71,8 @@
   </div>
 
   <!-- Firebase + App Logic -->
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="dashboard.js"></script>
+  <script type="module" src="./firebase.js" defer></script>
+  <script type="module" src="./dashboard.js" defer></script>
 
 </body>
 </html>
