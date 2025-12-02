@@ -5,15 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📊 لوحة الفواتير - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
-
-  <!-- مكتبات PDF والتصوير -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <!-- Firebase + Dashboard Scripts (Modules) -->
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="dashboard.js"></script>
-
 </head>
 <body>
   <div class="container">
@@ -25,8 +16,26 @@
     <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
 
     <form id="invoiceForm">
-      <label id="labelImage" for="invoiceImage">📷 صورة الفاتورة :</label>
-      <input type="file" id="invoiceImage" accept="image/*" required>
+      <label for="invoiceName" id="labelName">اسم الفاتورة:</label>
+      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
+
+      <label for="invoiceAmount" id="labelAmount">المبلغ (ريال):</label>
+      <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
+
+      <label for="invoiceDate" id="labelDate">التاريخ:</label>
+      <input type="date" id="invoiceDate" required>
+
+      <label for="invoiceWarranty" id="labelWarranty">مدة الضمان (بالأشهر):</label>
+      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
+
+      <!-- زر التقاط أو رفع صورة الفاتورة -->
+      <label id="labelImage" for="invoiceImage">📷 أضف صورة الفاتورة:</label>
+
+      <input type="file"
+             id="invoiceImage"
+             accept="image/*"
+             capture="environment"
+             required>
 
       <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
     </form>
@@ -36,17 +45,22 @@
       <thead>
         <tr>
           <th id="thName">الاسم</th>
-          <th id="thAmount">المبلغ</th>
+          <th id="thAmount">المبلغ (ريال)</th>
           <th id="thDate">التاريخ</th>
-          <th id="thImage">الصورة</th>
+          <th id="thWarranty">الضمان (أشهر)</th>
+          <th id="thImage">فاتورة</th>
           <th id="thAction">إجراء</th>
         </tr>
       </thead>
       <tbody id="invoiceList"></tbody>
     </table>
 
-    <button class="logout-btn" id="logoutBtn" onclick="logout()">🚪 تسجيل الخروج</button>
+    <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
   </div>
+
+  <!-- Firebase و OCR و Dashboard Logic -->
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="dashboard.js"></script>
 
 </body>
 </html>
