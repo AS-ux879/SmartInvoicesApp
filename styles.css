@@ -1,58 +1,109 @@
-/* إصلاح الحقول */
-input[type="text"],
-input[type="number"],
-input[type="date"],
-input[type="file"] {
+body {
+  font-family: 'Tajawal', sans-serif;
+  background-color: #f6f7fb;
+  color: #333;
+  text-align: center;
+  direction: rtl;
+}
+
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.08);
+}
+
+/* تنسيق العناوين */
+h1, h2 {
+  margin-bottom: 15px;
+}
+
+/* الحقول */
+label {
+  font-size: 16px;
+  font-weight: 600;
   display: block;
+  text-align: right;
+  margin: 12px 5px 4px;
+}
+
+input {
   width: 100%;
+  height: auto;
   padding: 12px;
-  margin-bottom: 12px;
+  font-size: 18px;
+  line-height: 1.4; /* حل مشكلة انقسام النص */
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   box-sizing: border-box;
+  outline: none;
+}
+
+input:focus {
+  border-color: #2b5b7b;
+  box-shadow: 0 0 5px rgba(43, 91, 123, 0.3);
 }
 
 /* الأزرار */
 button {
   width: 100%;
-  padding: 14px;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  background-color: #2b5b7b;
+  color: white;
+  font-size: 18px;
   border: none;
-  border-radius: 6px;
-  background-color: #1f4159;
-  color: #fff;
-  font-size: 16px;
   cursor: pointer;
-  margin-top: 12px;
+  transition: 0.3s;
 }
 
 button:hover {
-  background-color: #163244;
+  background-color: #1f4159;
 }
 
-/* جدول الفواتير */
-table {
-  width: 100%;
-  margin-top: 20px;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #bbb;
-  padding: 10px;
-  text-align: center;
-}
-
-/* زر الحذف */
-.delete-btn {
-  background-color: #b22a2a;
-  color: #fff;
-}
-
+/* زر تسجيل الخروج */
 .logout-btn {
   background-color: #b22a2a;
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 .logout-btn:hover {
-  background-color: #8b1f1f;
+  background-color: #8d1f1f;
+}
+
+/* الجدول */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 25px;
+}
+
+th {
+  background-color: #2b5b7b;
+  color: white;
+  padding: 10px;
+}
+
+td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+td a {
+  text-decoration: none;
+  font-size: 20px;
+}
+
+/* تحسين عرض صفحة الجوال */
+@media (max-width: 600px) {
+  .container {
+    width: 90%;
+  }
+
+  input, button {
+    font-size: 16px;
+  }
 }
