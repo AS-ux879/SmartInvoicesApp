@@ -11,25 +11,24 @@
   <div class="container">
 
     <h1>📊 لوحة الفواتير</h1>
-    <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
+    <p><span>مرحبًا</span> <span id="userName"></span> 👋</p>
 
-    <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
-
+      
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
-      <input type="file" id="invoiceImage" accept="image/*" required>
+      <input type="file" id="invoiceImage" accept="image/*">
 
       <label for="invoiceName">اسم الفاتورة:</label>
-      <input type="text" id="invoiceName" placeholder="جاري القراءة..." required>
+      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال">
 
       <label for="invoiceAmount">المبلغ (ريال):</label>
-      <input type="number" id="invoiceAmount" placeholder="جاري القراءة..." required>
+      <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
 
       <label for="invoiceDate">التاريخ:</label>
-      <input type="date" id="invoiceDate" required>
+      <input type="date" id="invoiceDate">
 
       <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
-      <input type="number" id="invoiceWarranty" placeholder="مثال: 12" required>
+      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
       <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
 
@@ -44,7 +43,7 @@
           <th>المبلغ</th>
           <th>التاريخ</th>
           <th>الضمان</th>
-          <th>صورة الفاتورة</th>
+          <th>عرض</th>
           <th>إجراء</th>
         </tr>
       </thead>
