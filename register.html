@@ -4,36 +4,55 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📝 تسجيل مستخدم جديد - Smart Invoices</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="lang-switch">
-      <button id="langBtn">🌐 English</button>
-    </div>
 
+  <!-- CSS -->
+  <link rel="stylesheet" href="/SmartInvoicesApp/styles.css">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="/SmartInvoicesApp/manifest.json">
+  <meta name="theme-color" content="#264653">
+
+  <!-- Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/SmartInvoicesApp/service-worker.js")
+        .then(() => console.log("SW Registered"))
+        .catch(err => console.log("SW Error:", err));
+      });
+    }
+  </script>
+</head>
+
+<body>
+
+  <div class="container">
     <h1 id="title">📝 تسجيل مستخدم جديد</h1>
 
     <form id="registerForm">
-      <label id="labelName" for="name">الاسم الكامل:</label>
+      <label for="name">الاسم الكامل:</label>
       <input type="text" id="name" placeholder="اكتب اسمك الكامل" required>
 
-      <label id="labelEmail" for="email">البريد الإلكتروني:</label>
+      <label for="email">البريد الإلكتروني:</label>
       <input type="email" id="email" placeholder="example@email.com" required>
 
-      <label id="labelPassword" for="password">كلمة المرور:</label>
+      <label for="password">كلمة المرور:</label>
       <input type="password" id="password" placeholder="•••••••" required>
 
       <button type="submit" id="registerBtn">تسجيل</button>
     </form>
 
-    <p id="haveAccount">لديك حساب؟ <a href="login.html" id="loginLink">تسجيل الدخول</a></p>
+    <p>
+      لديك حساب؟
+      <a href="/SmartInvoicesApp/login.html">تسجيل الدخول</a>
+    </p>
   </div>
 
-  <!-- Firebase أولاً -->
-  <script type="module" src="firebase.js"></script>
+  <!-- Firebase -->
+  <script type="module" src="/SmartInvoicesApp/firebase.js"></script>
 
-  <!-- سكربت التسجيل -->
-  <script type="module" src="register.js"></script>
+  <!-- Register Logic -->
+  <script type="module" src="/SmartInvoicesApp/register.js"></script>
+
 </body>
 </html>
