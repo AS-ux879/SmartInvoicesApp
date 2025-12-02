@@ -15,17 +15,18 @@
 
     <form id="invoiceForm">
       
+      <!-- رفع الصورة أولاً بشكل صحيح + required -->
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
-      <input type="file" id="invoiceImage" accept="image/*">
+      <input type="file" id="invoiceImage" accept="image/*" required style="padding: 6px; background: #fff;">
 
       <label for="invoiceName">اسم الفاتورة:</label>
-      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال">
+      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
 
       <label for="invoiceAmount">المبلغ (ريال):</label>
-      <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
+      <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
 
       <label for="invoiceDate">التاريخ:</label>
-      <input type="date" id="invoiceDate">
+      <input type="date" id="invoiceDate" required>
 
       <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
       <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
