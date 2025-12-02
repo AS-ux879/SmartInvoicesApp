@@ -1,5 +1,5 @@
 // ============================
-// dashboard.js — AUTO OCR VERSION
+// Dashboard.js — FINAL WORKING VERSION
 // ============================
 
 import { auth, db, storage } from "./firebase.js";
@@ -24,13 +24,12 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-// OCR API KEY
+// OCR API KEY (ضعِي المفتاح الصحيح هنا لاحقاً)
 const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
 let currentUser = null;
 const invoiceList = document.getElementById("invoiceList");
 
-// عند تسجيل دخول المستخدم
 onAuthStateChanged(auth, async (user) => {
   if (!user) return window.location.href = "login.html";
   currentUser = user;
@@ -52,50 +51,48 @@ async function loadInvoices() {
         <td>${d.amount}</td>
         <td>${d.date}</td>
         <td>${d.warranty || "-"}</td>
-        <td><a href="${d.imageUrl}" target="_blank">📄 عرض</a></td>
+        <td><a href="${d.imageUrl}" target="_blank">📄</a></td>
         <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
   });
 }
 
-// حذف فاتورة
+// حذف
 window.deleteInvoice = async (id) => {
-  if (!confirm("هل تريد حذف الفاتورة؟")) return;
+  if (!confirm("حذف؟")) return;
   await deleteDoc(doc(db, "invoices", id));
   loadInvoices();
 };
 
-// تشغيل OCR تلقائياً عند اختيار صورة
+// OCR تلقائي
 document.getElementById("invoiceImage").addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
-  document.getElementById("invoiceName").value = "جاري القراءة...";
+  document.getElementById("invoiceName").value = "جاري التحليل...";
   document.getElementById("invoiceAmount").value = "";
-  document.getElementById("invoiceDate").value = "";
 
   const storageRef = ref(storage, `ocr_temp/${Date.now()}_${file.name}`);
   await uploadBytes(storageRef, file);
   const imageUrl = await getDownloadURL(storageRef);
 
   const text = await extractTextFromImage(imageUrl);
-  const extracted = extractInvoiceData(text);
+  const result = extractInvoiceData(text);
 
-  document.getElementById("invoiceName").value = extracted.name;
-  document.getElementById("invoiceAmount").value = extracted.amount;
-  
-  if (extracted.date !== "غير محدد") {
+  document.getElementById("invoiceName").value = result.name;
+  document.getElementById("invoiceAmount").value = result.amount;
+  if (result.date !== "غير محدد") {
     document.getElementById("invoiceDate").value =
-      new Date(extracted.date).toISOString().split("T")[0];
+      new Date(result.date).toISOString().split("T")[0];
   }
 });
 
-// حفظ الفاتورة
+// حفظ
 document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const file = document.getElementById("invoiceImage").files[0];
-  if (!file) return alert("اختر صورة أولاً");
+  if (!file) return alert("اختر صورة");
 
   const storageRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
   await uploadBytes(storageRef, file);
@@ -111,27 +108,26 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
     createdAt: new Date()
   });
 
-  alert("تم حفظ الفاتورة بنجاح");
+  alert("تم حفظ الفاتورة");
   loadInvoices();
   document.getElementById("invoiceForm").reset();
 });
 
-// OCR
+// Vision OCR API
 async function extractTextFromImage(imageUrl) {
-  const res = await fetch(
+  const r = await fetch(
     `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`,
     {
       method: "POST",
       body: JSON.stringify({
         requests: [{
-          image: { source: { imageUri: imageUrl } },
+          image: { source: { imageUri: imageUrl }},
           features: [{ type: "TEXT_DETECTION" }]
         }]
       })
     }
   );
-
-  const data = await res.json();
+  const data = await r.json();
   return data?.responses?.[0]?.fullTextAnnotation?.text || "";
 }
 
@@ -143,7 +139,7 @@ function extractInvoiceData(text) {
   };
 }
 
-// تسجيل خروج
+// خروج
 window.logout = () => {
   signOut(auth);
   window.location.href = "login.html";
