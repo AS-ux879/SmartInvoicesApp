@@ -6,16 +6,16 @@
   <title>📊 لوحة الفواتير - Smart Invoices</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="styles.css">
 
   <!-- Manifest -->
-  <link rel="manifest" href="./manifest.json">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#264653">
 
   <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./service-worker.js")
+      navigator.serviceWorker.register("service-worker.js")
         .then(() => console.log("Service Worker Registered"))
         .catch(err => console.error("SW Error:", err));
     }
@@ -31,18 +31,18 @@
 
     <!-- نموذج إضافة الفاتورة -->
     <form id="invoiceForm">
-      
+
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
-      <input type="file" id="invoiceImage" accept="image/*" required>
+      <input type="file" id="invoiceImage" accept="image/*">
 
       <label for="invoiceName">اسم الفاتورة:</label>
-      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
+      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال">
 
       <label for="invoiceAmount">المبلغ (ريال):</label>
-      <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
+      <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
 
       <label for="invoiceDate">التاريخ:</label>
-      <input type="date" id="invoiceDate" required>
+      <input type="date" id="invoiceDate">
 
       <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
       <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
@@ -52,7 +52,7 @@
 
     <h2>🧾 قائمة الفواتير</h2>
 
-    <table border="1" width="100%">
+    <table>
       <thead>
         <tr>
           <th>الاسم</th>
@@ -66,13 +66,13 @@
       <tbody id="invoiceList"></tbody>
     </table>
 
-    <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
+    <button class="logout-btn" id="logoutBtn" onclick="logout()">🚪 تسجيل الخروج</button>
 
   </div>
 
   <!-- Firebase + App Logic -->
-  <script type="module" src="./firebase.js" defer></script>
-  <script type="module" src="./dashboard.js" defer></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="dashboard.js"></script>
 
 </body>
 </html>
