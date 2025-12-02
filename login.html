@@ -4,33 +4,52 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🔐 تسجيل الدخول - Smart Invoices</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <div class="container">
-    <div class="lang-switch">
-      <button id="langBtn">🌐 English</button>
-    </div>
 
+  <!-- CSS -->
+  <link rel="stylesheet" href="/SmartInvoicesApp/styles.css">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="/SmartInvoicesApp/manifest.json">
+  <meta name="theme-color" content="#264653">
+
+  <!-- Register Service Worker -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/SmartInvoicesApp/service-worker.js")
+          .then(() => console.log("SW Registered"))
+          .catch(err => console.log("SW Error:", err));
+      });
+    }
+  </script>
+</head>
+
+<body>
+
+  <div class="container">
     <h1 id="title">🔐 تسجيل الدخول</h1>
 
     <form id="loginForm">
-      <label id="labelEmail" for="email">البريد الإلكتروني:</label>
+      <label for="email">البريد الإلكتروني:</label>
       <input type="email" id="email" placeholder="example@email.com" required>
 
-      <label id="labelPassword" for="password">كلمة المرور:</label>
+      <label for="password">كلمة المرور:</label>
       <input type="password" id="password" placeholder="•••••••" required>
 
-      <button type="submit" id="loginBtn">دخول</button>
+      <button type="submit" id="loginBtn">تسجيل الدخول</button>
     </form>
 
-    <p id="noAccount">ليس لديك حساب؟ <a href="register.html" id="registerLink">تسجيل جديد</a></p>
+    <p>
+      ليس لديك حساب؟
+      <a href="/SmartInvoicesApp/register.html">إنشاء حساب جديد</a>
+    </p>
   </div>
 
-  <!-- Firebase أولاً -->
-  <script type="module" src="firebase.js"></script>
+  <!-- Firebase -->
+  <script type="module" src="/SmartInvoicesApp/firebase.js"></script>
 
-  <!-- سكربت تسجيل الدخول -->
-  <script type="module" src="login.js"></script>
+  <!-- Login Logic -->
+  <script type="module" src="/SmartInvoicesApp/login.js"></script>
+
 </body>
 </html>
