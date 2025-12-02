@@ -3,36 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Invoices</title>
+  <title>📊 لوحة الفواتير - Smart Invoices</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
 </head>
 <body>
   <div class="container">
-    <h2>Smart Invoices</h2>
-    <p>جاري التحقق من حالة تسجيل الدخول...</p>
+
+    <h1 id="title">📊 لوحة الفواتير</h1>
+    <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
+
+    <form id="invoiceForm">
+      
+      <label for="invoiceName" id="labelName">اسم الفاتورة:</label>
+      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
+
+      <label for="invoiceAmount" id="labelAmount">المبلغ (ريال):</label>
+      <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
+
+      <label for="invoiceDate" id="labelDate">التاريخ:</label>
+      <input type="date" id="invoiceDate" required>
+
+      <label for="invoiceWarranty" id="labelWarranty">مدة الضمان (بالأشهر):</label>
+      <input type="number" id="invoiceWarranty" placeholder="مثال: 12" required>
+
+      <label id="labelImage" for="invoiceImage">📷 صورة الفاتورة:</label>
+      <input type="file" id="invoiceImage" accept="image/*" required>
+
+      <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
+    </form>
+
+    <h2 id="listTitle">🧾 قائمة الفواتير</h2>
+    <table border="1" width="100%">
+      <thead>
+        <tr>
+          <th id="thName">الاسم</th>
+          <th id="thAmount">المبلغ (ريال)</th>
+          <th id="thDate">التاريخ</th>
+          <th id="thWarranty">الضمان (أشهر)</th>
+          <th id="thImage">الفاتورة</th>
+          <th id="thAction">إجراء</th>
+        </tr>
+      </thead>
+      <tbody id="invoiceList"></tbody>
+    </table>
+
+    <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
   </div>
 
-  <!-- Firebase أولاً -->
   <script type="module" src="firebase.js"></script>
+  <script type="module" src="dashboard.js"></script>
 
-  <!-- التوجيه حسب حالة المستخدم -->
-  <script type="module">
-    import { auth } from "./firebase.js";
-    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.href = "dashboard.html";
-      } else {
-        window.location.href = "login.html";
-      }
-    });
-  </script>
 </body>
 </html>
