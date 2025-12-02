@@ -18,9 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("تم تسجيل الدخول!");
+      alert("تم تسجيل الدخول بنجاح!");
       window.location.href = "dashboard.html";
-    } catch (error) {
+    } 
+    catch (error) {
       alert("خطأ في تسجيل الدخول: " + error.message);
     }
   });
