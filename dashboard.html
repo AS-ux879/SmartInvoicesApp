@@ -6,18 +6,18 @@
   <title>📊 لوحة الفواتير - Smart Invoices</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="/SmartInvoicesApp/styles.css">
+  <link rel="stylesheet" href="styles.css">
 
-  <!-- Manifest -->
-  <link rel="manifest" href="/SmartInvoicesApp/manifest.json">
+  <!-- Manifest (لتثبيت التطبيق كـ APK / PWA) -->
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#264653">
 
   <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/SmartInvoicesApp/service-worker.js")
+      navigator.serviceWorker.register("service-worker.js")
         .then(() => console.log("Service Worker Registered"))
-        .catch(err => console.error("SW Error", err));
+        .catch(err => console.error("Service Worker Failed:", err));
     }
   </script>
 </head>
@@ -45,9 +45,9 @@
       <input type="date" id="invoiceDate" required>
 
       <label for="invoiceWarranty" id="labelWarranty">مدة الضمان (بالأشهر):</label>
-      <input type="number" id="invoiceWarranty" placeholder="مثال: 12" required>
+      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
-      <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
+      <button type="submit" id="addBtn">➕ إضافة الفواتير</button>
     </form>
 
     <h2 id="listTitle">🧾 قائمة الفواتير</h2>
@@ -71,8 +71,8 @@
   </div>
 
   <!-- Firebase + App Logic -->
-  <script type="module" src="/SmartInvoicesApp/firebase.js"></script>
-  <script type="module" src="/SmartInvoicesApp/dashboard.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="dashboard.js"></script>
 
 </body>
 </html>
