@@ -1,5 +1,5 @@
 // ============================
-// dashboard.js — FINAL VERSION
+// dashboard.js — AUTO OCR VERSION
 // ============================
 
 import { auth, db, storage } from "./firebase.js";
@@ -30,35 +30,29 @@ const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 let currentUser = null;
 const invoiceList = document.getElementById("invoiceList");
 
-// التحقق من تسجيل الدخول
+// عند تسجيل دخول المستخدم
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    alert("الرجاء تسجيل الدخول أولاً");
-    window.location.href = "login.html";
-    return;
-  }
-
+  if (!user) return window.location.href = "login.html";
   currentUser = user;
   document.getElementById("userName").textContent = user.displayName || "مستخدم";
-  await loadInvoices();
+  loadInvoices();
 });
 
 // تحميل الفواتير
 async function loadInvoices() {
   invoiceList.innerHTML = "";
-
   const q = query(collection(db, "invoices"), where("userId", "==", currentUser.uid));
   const snapshot = await getDocs(q);
 
   snapshot.forEach(docSnap => {
-    const data = docSnap.data();
+    const d = docSnap.data();
     invoiceList.innerHTML += `
       <tr>
-        <td>${data.name}</td>
-        <td>${data.amount}</td>
-        <td>${data.date}</td>
-        <td>${data.warranty || "-"}</td>
-        <td><a href="${data.imageUrl}" target="_blank">📄 عرض</a></td>
+        <td>${d.name}</td>
+        <td>${d.amount}</td>
+        <td>${d.date}</td>
+        <td>${d.warranty || "-"}</td>
+        <td><a href="${d.imageUrl}" target="_blank">📄 عرض</a></td>
         <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
   });
@@ -66,48 +60,63 @@ async function loadInvoices() {
 
 // حذف فاتورة
 window.deleteInvoice = async (id) => {
-  if (!confirm("تأكيد حذف الفاتورة؟")) return;
+  if (!confirm("هل تريد حذف الفاتورة؟")) return;
   await deleteDoc(doc(db, "invoices", id));
   loadInvoices();
 };
 
-// عند إضافة فواتير
+// تشغيل OCR تلقائياً عند اختيار صورة
+document.getElementById("invoiceImage").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  document.getElementById("invoiceName").value = "جاري القراءة...";
+  document.getElementById("invoiceAmount").value = "";
+  document.getElementById("invoiceDate").value = "";
+
+  const storageRef = ref(storage, `ocr_temp/${Date.now()}_${file.name}`);
+  await uploadBytes(storageRef, file);
+  const imageUrl = await getDownloadURL(storageRef);
+
+  const text = await extractTextFromImage(imageUrl);
+  const extracted = extractInvoiceData(text);
+
+  document.getElementById("invoiceName").value = extracted.name;
+  document.getElementById("invoiceAmount").value = extracted.amount;
+  
+  if (extracted.date !== "غير محدد") {
+    document.getElementById("invoiceDate").value =
+      new Date(extracted.date).toISOString().split("T")[0];
+  }
+});
+
+// حفظ الفاتورة
 document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const file = document.getElementById("invoiceImage").files[0];
-  if (!file) return alert("يرجى اختيار صورة الفاتورة");
+  if (!file) return alert("اختر صورة أولاً");
 
-  try {
-    // رفع الصورة
-    const storageRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    const imageUrl = await getDownloadURL(storageRef);
+  const storageRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
+  await uploadBytes(storageRef, file);
+  const imageUrl = await getDownloadURL(storageRef);
 
-    // OCR القراءة التلقائية
-    const text = await extractTextFromImage(imageUrl);
-    const extracted = extractInvoiceData(text);
+  await addDoc(collection(db, "invoices"), {
+    userId: currentUser.uid,
+    name: document.getElementById("invoiceName").value,
+    amount: document.getElementById("invoiceAmount").value,
+    date: document.getElementById("invoiceDate").value,
+    warranty: document.getElementById("invoiceWarranty").value,
+    imageUrl,
+    createdAt: new Date()
+  });
 
-    await addDoc(collection(db, "invoices"), {
-      userId: currentUser.uid,
-      name: extracted.name,
-      amount: extracted.amount,
-      date: extracted.date,
-      warranty: document.getElementById("invoiceWarranty").value,
-      imageUrl,
-      createdAt: new Date()
-    });
-
-    alert("تم إضافة الفاتورة بنجاح");
-    loadInvoices();
-    document.getElementById("invoiceForm").reset();
-
-  } catch (err) {
-    alert("خطأ: " + err.message);
-  }
+  alert("تم حفظ الفاتورة بنجاح");
+  loadInvoices();
+  document.getElementById("invoiceForm").reset();
 });
 
-// Google Vision OCR
+// OCR
 async function extractTextFromImage(imageUrl) {
   const res = await fetch(
     `https://vision.googleapis.com/v1/images:annotate?key=${VISION_API_KEY}`,
@@ -126,7 +135,6 @@ async function extractTextFromImage(imageUrl) {
   return data?.responses?.[0]?.fullTextAnnotation?.text || "";
 }
 
-// استخلاص البيانات
 function extractInvoiceData(text) {
   return {
     name: text.split("\n")[0] || "فاتورة",
