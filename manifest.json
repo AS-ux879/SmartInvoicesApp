@@ -1,9 +1,9 @@
 {
-  "id": "smart.invoices.app",
+  "id": "/SmartInvoicesApp/",
   "name": "Smart Invoices",
   "short_name": "Invoices",
   "description": "تطبيق لإدارة وتتبع الفواتير بسهولة وأمان باستخدام واجهة عربية وإنجليزية.",
-  "start_url": "/SmartInvoicesApp/",
+  "start_url": "/SmartInvoicesApp/dashboard.html",
   "scope": "/SmartInvoicesApp/",
   "display": "standalone",
   "background_color": "#f5f6f8",
