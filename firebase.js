@@ -1,5 +1,5 @@
 // ============================
-// firebase.js — Main Firebase Init
+// firebase.js — Main Firebase Init (Final)
 // ============================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -7,18 +7,17 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-aut
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-// ==== Firebase Config (استخدمي مشروعك) ====
+// ===== Firebase Config (مشروعك) =====
 const firebaseConfig = {
   apiKey: "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA",
   authDomain: "smartinvoicesapp-ebb2c.firebaseapp.com",
   projectId: "smartinvoicesapp-ebb2c",
   storageBucket: "smartinvoicesapp-ebb2c.appspot.com",
   messagingSenderId: "665203531882",
-  appId: "1:665203531882:web:e793ac17dc0f5b5d92aa13",
+  appId: "1:665203531882:web:e793ac17dc0f5b5d92aa13"
 };
 
-// ==== Replace OCR Key later inside dashboard.js ====
-
+// ===== Init Firebase Services =====
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
