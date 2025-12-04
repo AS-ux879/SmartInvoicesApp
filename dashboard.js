@@ -1,5 +1,5 @@
 /* ============================
-   dashboard.js — FINAL VERSION
+   dashboard.js — FIXED FINAL VERSION
    ============================ */
 
 import { auth, db, storage } from "./firebase.js";
@@ -24,7 +24,9 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-const VISION_API_KEY = "‏AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
+// Google Vision API
+const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
+
 let currentUser;
 const invoiceList = document.getElementById("invoiceList");
 const totalSpentDisplay = document.getElementById("totalSpent");
@@ -39,7 +41,6 @@ onAuthStateChanged(auth, async (user) => {
   }
   currentUser = user;
   document.getElementById("userName").textContent = user.email;
-
   loadInvoices();
 });
 
@@ -50,7 +51,7 @@ document.getElementById("invoiceImage").addEventListener("change", async (event)
   const file = event.target.files[0];
   if (!file) return;
 
-  document.getElementById("invoiceName").value = "جاري القراءة...";
+  document.getElementById("invoiceName").value = "جاري تحليل الصورة...";
   document.getElementById("invoiceAmount").value = "";
   document.getElementById("invoiceDate").value = "";
 
@@ -63,6 +64,7 @@ document.getElementById("invoiceImage").addEventListener("change", async (event)
     fillFields(text);
   } catch (err) {
     console.error("OCR Error:", err);
+    alert("حدث خطأ أثناء تحليل الصورة");
   }
 });
 
@@ -90,7 +92,7 @@ function fillFields(text) {
   const amount = text.match(/\d+/)?.[0] || "";
   const foundDate = text.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/)?.[0];
 
-  document.getElementById("invoiceName").value = text.split("\n")[0] || "فاتورة";
+  document.getElementById("invoiceName").value = text.split("\n")[0] || "فاتورة بدون اسم";
   document.getElementById("invoiceAmount").value = amount;
 
   if (foundDate) {
@@ -98,6 +100,12 @@ function fillFields(text) {
     if (!isNaN(parsed)) {
       document.getElementById("invoiceDate").value = parsed.toISOString().split("T")[0];
     }
+  }
+
+  // إذا لم يجد OCR تاريخ، ضع تاريخ اليوم تلقائياً
+  if (!document.getElementById("invoiceDate").value) {
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("invoiceDate").value = today;
   }
 }
 
@@ -108,7 +116,18 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const file = document.getElementById("invoiceImage").files[0];
-  if (!file) return alert("يرجى اختيار صورة");
+  if (!file) return alert("يرجى اختيار صورة الفاتورة أولاً");
+
+  if (!document.getElementById("invoiceName").value.trim()) {
+    return alert("يرجى إدخال اسم الفاتورة");
+  }
+  if (!document.getElementById("invoiceAmount").value.trim()) {
+    return alert("يرجى إدخال مبلغ الفاتورة");
+  }
+  if (!document.getElementById("invoiceDate").value.trim()) {
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("invoiceDate").value = today;
+  }
 
   try {
     const path = `invoices/${currentUser.uid}/${Date.now()}_${file.name}`;
@@ -122,14 +141,16 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
       amount: Number(document.getElementById("invoiceAmount").value),
       date: document.getElementById("invoiceDate").value,
       warranty: document.getElementById("invoiceWarranty").value,
-      imageUrl: url
+      imageUrl: url,
+      createdAt: new Date()
     });
 
     document.getElementById("invoiceForm").reset();
-    alert("تمت الإضافة بنجاح");
+    alert("✅ تمت إضافة الفاتورة بنجاح");
     loadInvoices();
   } catch (err) {
     console.error("Add Invoice Error:", err);
+    alert("حدث خطأ أثناء حفظ الفاتورة");
   }
 });
 
@@ -144,8 +165,8 @@ async function loadInvoices() {
   const res = await getDocs(q);
 
   if (res.empty) {
-    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير</td></tr>";
-    updateChart([]);
+    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير بعد</td></tr>";
+    updateChart([0]);
     totalSpentDisplay.textContent = "0 ريال";
     return;
   }
@@ -160,8 +181,8 @@ async function loadInvoices() {
         <td>${data.amount} ريال</td>
         <td>${data.date}</td>
         <td>${data.warranty || "-"}</td>
-        <td><a href="${data.imageUrl}" target="_blank">📄</a></td>
-        <td><button class="delete-btn" data-id="${d.id}">حذف</button></td>
+        <td><a href="${data.imageUrl}" target="_blank">📄 عرض</a></td>
+        <td><button class="delete-btn" data-id="${d.id}">🗑️ حذف</button></td>
       </tr>`;
   });
 
@@ -173,12 +194,11 @@ async function loadInvoices() {
   );
 
   totalSpentDisplay.textContent = `${totalExpenses} ريال`;
-
   updateChart([totalExpenses]);
 }
 
 // ==================================
-// رسم بياني للمصاريف
+// التحليل المالي (الرسم البياني)
 // ==================================
 function updateChart(data) {
   if (chart) chart.destroy();
@@ -190,7 +210,7 @@ function updateChart(data) {
       labels: ["إجمالي المصروفات"],
       datasets: [
         {
-          label: "📊 ريال",
+          label: "ريال 📊",
           data: data,
           backgroundColor: "#2b5b7b"
         }
