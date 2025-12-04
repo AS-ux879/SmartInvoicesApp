@@ -1,5 +1,5 @@
 /* ===================================
-   dashboard.js — FINAL WORKING VERSION
+   dashboard.js — STABLE PRODUCTION VERSION
    =================================== */
 
 import { auth, db, storage } from "./firebase.js";
@@ -15,8 +15,7 @@ import {
   deleteDoc,
   doc,
   query,
-  where,
-  orderBy
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 import {
@@ -27,15 +26,15 @@ import {
 
 let currentUser;
 let chart;
-const invoiceList = document.getElementById("invoiceList");
-const totalSpentDisplay = document.getElementById("totalSpent");
 
-// ========================= USER LOGIN =========================
-onAuthStateChanged(auth, async (user) => {
-  if (!user) return (window.location.href = "login.html");
+// ========================= USER AUTH =========================
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
   currentUser = user;
-
-  // عرض الاسم فقط وليس الإيميل كامل
   document.getElementById("userName").textContent =
     user.displayName || user.email.split("@")[0];
 
@@ -43,9 +42,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // ========================= ADD INVOICE =========================
-document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
-  e.preventDefault(); // منع إعادة تحميل الصفحة
-
+document.getElementById("addBtn").addEventListener("click", async () => {
   const file = invoiceImage.files[0];
   const name = invoiceName.value.trim();
   const amount = invoiceAmount.value.trim();
@@ -53,7 +50,7 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   const warranty = invoiceWarranty.value.trim() || "-";
 
   if (!name || !amount) {
-    alert("يرجى إدخال اسم ومبلغ الفاتورة");
+    alert("يرجى تعبئة اسم ومبلغ الفاتورة");
     return;
   }
 
@@ -70,8 +67,7 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
     amount: Number(amount),
     date,
     warranty,
-    imageUrl,
-    createdAt: new Date()
+    imageUrl
   });
 
   invoiceForm.reset();
@@ -86,31 +82,30 @@ async function loadInvoices() {
 
   const q = query(
     collection(db, "invoices"),
-    where("userId", "==", currentUser.uid),
-    orderBy("createdAt", "desc")
+    where("userId", "==", currentUser.uid)
   );
 
   const res = await getDocs(q);
 
   if (res.empty) {
-    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير</td></tr>";
+    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير بعد</td></tr>";
     totalSpentDisplay.textContent = "0 ريال";
-    updateChart([]);
+    updateChart([0]);
     return;
   }
 
   res.forEach((docSnap) => {
-    const data = docSnap.data();
-    total += data.amount;
-    values.push(data.amount);
+    const d = docSnap.data();
+    total += d.amount;
+    values.push(d.amount);
 
     invoiceList.innerHTML += `
       <tr>
-        <td>${data.name}</td>
-        <td>${data.amount} ريال</td>
-        <td>${data.date}</td>
-        <td>${data.warranty}</td>
-        <td>${data.imageUrl !== "-" ? `<a href="${data.imageUrl}" target="_blank">📄</a>` : "-"}</td>
+        <td>${d.name}</td>
+        <td>${d.amount} ريال</td>
+        <td>${d.date}</td>
+        <td>${d.warranty}</td>
+        <td>${d.imageUrl !== "-" ? `<a href="${d.imageUrl}" target="_blank">📄</a>` : "-"}</td>
         <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
   });
