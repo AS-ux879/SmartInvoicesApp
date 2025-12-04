@@ -1,5 +1,5 @@
 /* ============================
-   dashboard.js — FIXED FINAL VERSION
+   dashboard.js — FINAL STABLE VERSION
    ============================ */
 
 import { auth, db, storage } from "./firebase.js";
@@ -24,34 +24,27 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-// Google Vision API
+// ————— إصلاح مفتاح Vision API —————
 const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
 let currentUser;
 const invoiceList = document.getElementById("invoiceList");
 const totalSpentDisplay = document.getElementById("totalSpent");
-let chart;
 
-// ==================================
-// التحقق من المستخدم
-// ==================================
+// مراقبة حالة تسجيل الدخول
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    return (window.location.href = "login.html");
-  }
+  if (!user) return (window.location.href = "login.html");
   currentUser = user;
   document.getElementById("userName").textContent = user.email;
   loadInvoices();
 });
 
-// ==================================
-// OCR — عند رفع الصورة
-// ==================================
+// ——— OCR عند رفع الصورة ———
 document.getElementById("invoiceImage").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  document.getElementById("invoiceName").value = "جاري تحليل الصورة...";
+  document.getElementById("invoiceName").value = "جاري تحليل الفاتورة...";
   document.getElementById("invoiceAmount").value = "";
   document.getElementById("invoiceDate").value = "";
 
@@ -63,8 +56,8 @@ document.getElementById("invoiceImage").addEventListener("change", async (event)
     const text = await detectText(url);
     fillFields(text);
   } catch (err) {
-    console.error("OCR Error:", err);
-    alert("حدث خطأ أثناء تحليل الصورة");
+    console.error("OCR ERROR:", err);
+    alert("حدث خطأ أثناء قراءة الصورة");
   }
 });
 
@@ -83,57 +76,32 @@ async function detectText(imgUrl) {
       })
     }
   );
-
   const json = await response.json();
   return json.responses?.[0]?.fullTextAnnotation?.text || "";
 }
 
 function fillFields(text) {
-  const amount = text.match(/\d+/)?.[0] || "";
+  const amount = text.match(/\d{2,6}/)?.[0] || "";
   const foundDate = text.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/)?.[0];
 
-  document.getElementById("invoiceName").value = text.split("\n")[0] || "فاتورة بدون اسم";
+  document.getElementById("invoiceName").value = text.split("\n")[0] || "فاتورة";
   document.getElementById("invoiceAmount").value = amount;
-
-  if (foundDate) {
-    const parsed = new Date(foundDate);
-    if (!isNaN(parsed)) {
-      document.getElementById("invoiceDate").value = parsed.toISOString().split("T")[0];
-    }
-  }
-
-  // إذا لم يجد OCR تاريخ، ضع تاريخ اليوم تلقائياً
-  if (!document.getElementById("invoiceDate").value) {
-    const today = new Date().toISOString().split("T")[0];
-    document.getElementById("invoiceDate").value = today;
-  }
+  document.getElementById("invoiceDate").value =
+    foundDate ? new Date(foundDate).toISOString().split("T")[0] :
+    new Date().toISOString().split("T")[0];
 }
 
-// ==================================
-// إضافة الفاتورة
-// ==================================
+// ——— إضافة فاتورة ———
 document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const file = document.getElementById("invoiceImage").files[0];
-  if (!file) return alert("يرجى اختيار صورة الفاتورة أولاً");
-
-  if (!document.getElementById("invoiceName").value.trim()) {
-    return alert("يرجى إدخال اسم الفاتورة");
-  }
-  if (!document.getElementById("invoiceAmount").value.trim()) {
-    return alert("يرجى إدخال مبلغ الفاتورة");
-  }
-  if (!document.getElementById("invoiceDate").value.trim()) {
-    const today = new Date().toISOString().split("T")[0];
-    document.getElementById("invoiceDate").value = today;
-  }
+  if (!file) return alert("اختر صورة الفاتورة أولاً");
 
   try {
-    const path = `invoices/${currentUser.uid}/${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, path);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
+    const invoiceRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
+    await uploadBytes(invoiceRef, file);
+    const url = await getDownloadURL(invoiceRef);
 
     await addDoc(collection(db, "invoices"), {
       userId: currentUser.uid,
@@ -145,84 +113,52 @@ document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
       createdAt: new Date()
     });
 
+    alert("تمت الإضافة بنجاح ✔️");
     document.getElementById("invoiceForm").reset();
-    alert("✅ تمت إضافة الفاتورة بنجاح");
     loadInvoices();
   } catch (err) {
-    console.error("Add Invoice Error:", err);
-    alert("حدث خطأ أثناء حفظ الفاتورة");
+    console.error("ADD ERROR:", err);
+    alert("لم يتم الحفظ — تحقق من الاتصال!");
   }
 });
 
-// ==================================
-// تحميل الفواتير
-// ==================================
+// ——— تحميل الفواتير ———
 async function loadInvoices() {
   invoiceList.innerHTML = "";
-  let totalExpenses = 0;
+  let total = 0;
 
   const q = query(collection(db, "invoices"), where("userId", "==", currentUser.uid));
-  const res = await getDocs(q);
+  const data = await getDocs(q);
 
-  if (res.empty) {
-    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير بعد</td></tr>";
-    updateChart([0]);
+  if (data.empty) {
+    invoiceList.innerHTML = "<tr><td colspan='6'>لا يوجد فواتير بعد</td></tr>";
     totalSpentDisplay.textContent = "0 ريال";
     return;
   }
 
-  res.forEach((d) => {
-    const data = d.data();
-    totalExpenses += data.amount;
-
+  data.forEach((d) => {
+    const invoice = d.data();
+    total += invoice.amount;
     invoiceList.innerHTML += `
       <tr>
-        <td>${data.name}</td>
-        <td>${data.amount} ريال</td>
-        <td>${data.date}</td>
-        <td>${data.warranty || "-"}</td>
-        <td><a href="${data.imageUrl}" target="_blank">📄 عرض</a></td>
-        <td><button class="delete-btn" data-id="${d.id}">🗑️ حذف</button></td>
+        <td>${invoice.name}</td>
+        <td>${invoice.amount} ريال</td>
+        <td>${invoice.date}</td>
+        <td>${invoice.warranty || "-"}</td>
+        <td><a href="${invoice.imageUrl}" target="_blank">📄</a></td>
+        <td><button onclick="deleteInvoice('${d.id}')">🗑️</button></td>
       </tr>`;
   });
 
-  document.querySelectorAll(".delete-btn").forEach((btn) =>
-    btn.addEventListener("click", async (e) => {
-      await deleteDoc(doc(db, "invoices", e.target.dataset.id));
-      loadInvoices();
-    })
-  );
-
-  totalSpentDisplay.textContent = `${totalExpenses} ريال`;
-  updateChart([totalExpenses]);
+  totalSpentDisplay.textContent = `${total} ريال`;
 }
 
-// ==================================
-// التحليل المالي (الرسم البياني)
-// ==================================
-function updateChart(data) {
-  if (chart) chart.destroy();
+window.deleteInvoice = async (id) => {
+  await deleteDoc(doc(db, "invoices", id));
+  loadInvoices();
+};
 
-  const ctx = document.getElementById("expenseChart");
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: ["إجمالي المصروفات"],
-      datasets: [
-        {
-          label: "ريال 📊",
-          data: data,
-          backgroundColor: "#2b5b7b"
-        }
-      ]
-    },
-    options: { responsive: true }
-  });
-}
-
-// ==================================
-// تسجيل الخروج
-// ==================================
+// ——— تسجيل الخروج ———
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
