@@ -1,5 +1,5 @@
 /* ===================================
-   dashboard.js — FINAL FIXED VERSION
+   dashboard.js — FINAL WORKING VERSION
    =================================== */
 
 import { auth, db, storage } from "./firebase.js";
@@ -31,10 +31,11 @@ const invoiceList = document.getElementById("invoiceList");
 const totalSpentDisplay = document.getElementById("totalSpent");
 
 // ========================= USER LOGIN =========================
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (!user) return (window.location.href = "login.html");
-
   currentUser = user;
+
+  // عرض الاسم فقط وليس الإيميل كامل
   document.getElementById("userName").textContent =
     user.displayName || user.email.split("@")[0];
 
@@ -42,7 +43,9 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ========================= ADD INVOICE =========================
-document.getElementById("addBtn").addEventListener("click", async () => {
+document.getElementById("invoiceForm").addEventListener("submit", async (e) => {
+  e.preventDefault(); // منع إعادة تحميل الصفحة
+
   const file = invoiceImage.files[0];
   const name = invoiceName.value.trim();
   const amount = invoiceAmount.value.trim();
@@ -50,7 +53,8 @@ document.getElementById("addBtn").addEventListener("click", async () => {
   const warranty = invoiceWarranty.value.trim() || "-";
 
   if (!name || !amount) {
-    return alert("يرجى إدخال اسم ومبلغ الفاتورة");
+    alert("يرجى إدخال اسم ومبلغ الفاتورة");
+    return;
   }
 
   let imageUrl = "-";
@@ -78,7 +82,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
 async function loadInvoices() {
   invoiceList.innerHTML = "";
   let total = 0;
-  let values = [];
+  const values = [];
 
   const q = query(
     collection(db, "invoices"),
