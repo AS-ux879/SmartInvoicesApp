@@ -4,8 +4,6 @@ body {
   color: #333;
   text-align: center;
   direction: rtl;
-  margin: 0;
-  padding: 0;
 }
 
 .container {
@@ -17,103 +15,47 @@ body {
   box-shadow: 0 0 15px rgba(0,0,0,0.08);
 }
 
-/* تنسيق العناوين */
-h1, h2 {
-  margin-bottom: 15px;
-  font-weight: 700;
-}
-
-/* الحقول */
 label {
   font-size: 16px;
   font-weight: 600;
   display: block;
   text-align: right;
-  margin: 12px 5px 4px;
+  margin-top: 12px;
 }
 
 input {
   width: 100%;
   padding: 12px;
-  font-size: 17px;
-  line-height: 1.4;
+  font-size: 18px;
   border: 1px solid #ccc;
   border-radius: 8px;
-  box-sizing: border-box;
   outline: none;
 }
 
-input:focus {
-  border-color: #2b5b7b;
-  box-shadow: 0 0 5px rgba(43, 91, 123, 0.3);
-}
-
-/* الأزرار */
 button {
   width: 100%;
   padding: 12px;
-  margin-top: 10px;
+  margin-top: 12px;
   border-radius: 8px;
-  background-color: #2b5b7b;
+  background-color: #05455a;
   color: white;
   font-size: 18px;
   border: none;
   cursor: pointer;
-  transition: 0.3s;
 }
 
-button:hover {
-  background-color: #1f4159;
-}
-
-/* زر تسجيل الخروج */
 .logout-btn {
-  background-color: #b22a2a;
+  background-color: #c82333;
   margin-top: 20px;
 }
 
-.logout-btn:hover {
-  background-color: #8d1f1f;
-}
-
-/* الجدول */
 table {
   width: 100%;
+  margin-top: 20px;
   border-collapse: collapse;
-  margin-top: 25px;
 }
 
-th {
-  background-color: #2b5b7b;
-  color: white;
-  padding: 10px;
-  font-size: 16px;
-}
-
-td {
+th, td {
   padding: 10px;
   border: 1px solid #ddd;
-  font-size: 15px;
-}
-
-td a {
-  text-decoration: none;
-  font-size: 18px;
-  color: #2b5b7b;
-}
-
-/* للأجهزة الصغيرة */
-@media (max-width: 600px) {
-  .container {
-    width: 92%;
-    padding: 15px;
-  }
-
-  input, button {
-    font-size: 15px;
-  }
-
-  td, th {
-    font-size: 14px;
-  }
 }
