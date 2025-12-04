@@ -25,9 +25,8 @@
     <h1>📊 لوحة الفواتير</h1>
     <p><span id="greet">مرحباً</span> <span id="userName">...</span> 👋</p>
 
-
     <!-- نموذج إضافة الفاتورة -->
-    <form id="invoiceForm">
+    <form id="invoiceForm" onsubmit="return false">
 
       <label for="invoiceImage">📷 صورة الفاتورة:</label>
       <input type="file" id="invoiceImage" accept="image/*" required>
@@ -44,9 +43,10 @@
       <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
       <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
-      <button id="addBtn" type="submit">➕ إضافة الفاتورة</button>
-    </form>
+      <!-- تعديل مهم (زر لا يعيد تحميل الصفحة) -->
+      <button id="addBtn" type="button">➕ إضافة الفاتورة</button>
 
+    </form>
 
     <h2>🧾 قائمة الفواتير</h2>
 
@@ -64,7 +64,6 @@
       <tbody id="invoiceList"></tbody>
     </table>
 
-
     <!-- التحليل المالي -->
     <h2>💰 التحليل المالي</h2>
     <p>إجمالي المصروفات: <strong id="totalSpent">0 ريال</strong></p>
@@ -73,17 +72,16 @@
       <canvas id="expenseChart"></canvas>
     </div>
 
-
     <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
 
   </div>
 
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- Firebase + App Logic -->
-  <script type="module" src="./firebase.js" defer></script>
-  <script type="module" src="./dashboard.js" defer></script>
+  <script type="module" src="./firebase.js"></script>
+  <script type="module" src="./dashboard.js"></script>
 
 </body>
+
 </html>
