@@ -1,5 +1,5 @@
 /* ===================================
-   dashboard.js — WORKING FINAL VERSION
+   dashboard.js — FINAL FIXED VERSION
    =================================== */
 
 import { auth, db, storage } from "./firebase.js";
@@ -25,18 +25,14 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-// ============= GLOBALS =============
 let currentUser;
 let chart;
 const invoiceList = document.getElementById("invoiceList");
 const totalSpentDisplay = document.getElementById("totalSpent");
 
-// ============= AUTH CHECK ============
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+// ========================= USER LOGIN =========================
+onAuthStateChanged(auth, (user) => {
+  if (!user) return (window.location.href = "login.html");
 
   currentUser = user;
   document.getElementById("userName").textContent =
@@ -45,21 +41,19 @@ onAuthStateChanged(auth, async (user) => {
   loadInvoices();
 });
 
-// ============= ADD INVOICE ============
+// ========================= ADD INVOICE =========================
 document.getElementById("addBtn").addEventListener("click", async () => {
+  const file = invoiceImage.files[0];
   const name = invoiceName.value.trim();
   const amount = invoiceAmount.value.trim();
   const date = invoiceDate.value.trim() || new Date().toISOString().split("T")[0];
-  const warranty = invoiceWarranty.value.trim();
-  const file = invoiceImage.files[0];
+  const warranty = invoiceWarranty.value.trim() || "-";
 
   if (!name || !amount) {
-    alert("يرجى تعبئة اسم ومبلغ الفاتورة");
-    return;
+    return alert("يرجى إدخال اسم ومبلغ الفاتورة");
   }
 
-  let imageUrl = "";
-
+  let imageUrl = "-";
   if (file) {
     const fileRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(fileRef, file);
@@ -71,7 +65,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
     name,
     amount: Number(amount),
     date,
-    warranty: warranty || "-",
+    warranty,
     imageUrl,
     createdAt: new Date()
   });
@@ -80,11 +74,11 @@ document.getElementById("addBtn").addEventListener("click", async () => {
   loadInvoices();
 });
 
-// ============= LOAD INVOICES ============
+// ========================= LOAD INVOICES =========================
 async function loadInvoices() {
   invoiceList.innerHTML = "";
   let total = 0;
-  const values = [];
+  let values = [];
 
   const q = query(
     collection(db, "invoices"),
@@ -95,24 +89,24 @@ async function loadInvoices() {
   const res = await getDocs(q);
 
   if (res.empty) {
-    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير بعد</td></tr>";
-    updateChart([0]);
+    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير</td></tr>";
     totalSpentDisplay.textContent = "0 ريال";
+    updateChart([]);
     return;
   }
 
-  res.forEach(docSnap => {
-    const d = docSnap.data();
-    total += d.amount;
-    values.push(d.amount);
+  res.forEach((docSnap) => {
+    const data = docSnap.data();
+    total += data.amount;
+    values.push(data.amount);
 
     invoiceList.innerHTML += `
       <tr>
-        <td>${d.name}</td>
-        <td>${d.amount} ريال</td>
-        <td>${d.date}</td>
-        <td>${d.warranty}</td>
-        <td>${d.imageUrl ? `<a href="${d.imageUrl}" target="_blank">📄</a>` : "-"}</td>
+        <td>${data.name}</td>
+        <td>${data.amount} ريال</td>
+        <td>${data.date}</td>
+        <td>${data.warranty}</td>
+        <td>${data.imageUrl !== "-" ? `<a href="${data.imageUrl}" target="_blank">📄</a>` : "-"}</td>
         <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
   });
@@ -121,13 +115,13 @@ async function loadInvoices() {
   updateChart(values);
 }
 
-// ============= DELETE INVOICE ============
+// ========================= DELETE =========================
 window.deleteInvoice = async (id) => {
   await deleteDoc(doc(db, "invoices", id));
   loadInvoices();
 };
 
-// ============= CHART UPDATE ============
+// ========================= CHART =========================
 function updateChart(values) {
   if (chart) chart.destroy();
 
@@ -146,7 +140,7 @@ function updateChart(values) {
   });
 }
 
-// ============= LOGOUT ============
+// ========================= LOGOUT =========================
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
