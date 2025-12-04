@@ -29,11 +29,10 @@
     <label>مدة الضمان (بالأشهر):</label>
     <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
-    <button type="submit" id="addBtn">إضافة الفاتورة ➕</button>
+    <button type="submit">إضافة الفاتورة ➕</button>
   </form>
 
   <h3>قائمة الفواتير 🧾</h3>
-
   <table>
     <thead>
       <tr>
@@ -45,20 +44,17 @@
         <th>حذف</th>
       </tr>
     </thead>
-    <tbody id="invoiceList">
-      <tr><td colspan="6">لا توجد فواتير بعد</td></tr>
-    </tbody>
+    <tbody id="invoiceList"></tbody>
   </table>
 
-  <!-- التحليل المالي هنا -->
   <h3>📈 التحليل المالي</h3>
   <canvas id="chart"></canvas>
 
-  <button id="logoutBtn" class="logout-btn">🧷 تسجيل الخروج</button>
+  <button id="logoutBtn" class="logout-btn">تسجيل الخروج 🔐</button>
 </div>
 
-<script src="dashboard.js" type="module"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="dashboard.js"></script>
 
 </body>
 </html>
