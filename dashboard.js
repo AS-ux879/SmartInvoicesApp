@@ -1,12 +1,11 @@
 /* ===================================
-   dashboard.js — FINAL FOR PRESENTATION
+   dashboard.js — WORKING FINAL VERSION
    =================================== */
 
 import { auth, db, storage } from "./firebase.js";
 import {
   onAuthStateChanged,
-  signOut,
-  updateProfile
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 import {
@@ -16,7 +15,8 @@ import {
   deleteDoc,
   doc,
   query,
-  where
+  where,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 import {
@@ -25,37 +25,41 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
-
+// ============= GLOBALS =============
 let currentUser;
+let chart;
 const invoiceList = document.getElementById("invoiceList");
 const totalSpentDisplay = document.getElementById("totalSpent");
-let chart;
 
-// ---------------------- تحقق من تسجيل الدخول
+// ============= AUTH CHECK ============
 onAuthStateChanged(auth, async (user) => {
-  if (!user) return (window.location.href = "login.html");
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
 
   currentUser = user;
   document.getElementById("userName").textContent =
-    user.displayName || "مستخدم";
+    user.displayName || user.email.split("@")[0];
+
   loadInvoices();
 });
 
-// ---------------------- زر إضافة الفاتورة
+// ============= ADD INVOICE ============
 document.getElementById("addBtn").addEventListener("click", async () => {
   const name = invoiceName.value.trim();
   const amount = invoiceAmount.value.trim();
-  const date = invoiceDate.value.trim();
+  const date = invoiceDate.value.trim() || new Date().toISOString().split("T")[0];
   const warranty = invoiceWarranty.value.trim();
   const file = invoiceImage.files[0];
 
   if (!name || !amount) {
-    alert("الرجاء إدخال اسم ومبلغ الفاتورة");
+    alert("يرجى تعبئة اسم ومبلغ الفاتورة");
     return;
   }
 
   let imageUrl = "";
+
   if (file) {
     const fileRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
     await uploadBytes(fileRef, file);
@@ -66,8 +70,8 @@ document.getElementById("addBtn").addEventListener("click", async () => {
     userId: currentUser.uid,
     name,
     amount: Number(amount),
-    date: date || new Date().toISOString().split("T")[0],
-    warranty,
+    date,
+    warranty: warranty || "-",
     imageUrl,
     createdAt: new Date()
   });
@@ -76,22 +80,26 @@ document.getElementById("addBtn").addEventListener("click", async () => {
   loadInvoices();
 });
 
-// ---------------------- تحميل الفواتير
+// ============= LOAD INVOICES ============
 async function loadInvoices() {
   invoiceList.innerHTML = "";
   let total = 0;
+  const values = [];
 
-  const q = query(collection(db, "invoices"), where("userId", "==", currentUser.uid));
+  const q = query(
+    collection(db, "invoices"),
+    where("userId", "==", currentUser.uid),
+    orderBy("createdAt", "desc")
+  );
+
   const res = await getDocs(q);
 
   if (res.empty) {
     invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير بعد</td></tr>";
-    totalSpentDisplay.textContent = "0 ريال";
     updateChart([0]);
+    totalSpentDisplay.textContent = "0 ريال";
     return;
   }
-
-  let values = [];
 
   res.forEach(docSnap => {
     const d = docSnap.data();
@@ -103,8 +111,8 @@ async function loadInvoices() {
         <td>${d.name}</td>
         <td>${d.amount} ريال</td>
         <td>${d.date}</td>
-        <td>${d.warranty || '-'}</td>
-        <td>${d.imageUrl ? `<a href="${d.imageUrl}" target="_blank">📄</a>` : '-'}</td>
+        <td>${d.warranty}</td>
+        <td>${d.imageUrl ? `<a href="${d.imageUrl}" target="_blank">📄</a>` : "-"}</td>
         <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
   });
@@ -113,16 +121,17 @@ async function loadInvoices() {
   updateChart(values);
 }
 
+// ============= DELETE INVOICE ============
 window.deleteInvoice = async (id) => {
   await deleteDoc(doc(db, "invoices", id));
   loadInvoices();
 };
 
-// ---------------------- الرسم البياني
+// ============= CHART UPDATE ============
 function updateChart(values) {
   if (chart) chart.destroy();
-  const ctx = document.getElementById("expenseChart");
 
+  const ctx = document.getElementById("expenseChart");
   chart = new Chart(ctx, {
     type: "bar",
     data: {
@@ -137,7 +146,7 @@ function updateChart(values) {
   });
 }
 
-// ---------------------- تسجيل الخروج
+// ============= LOGOUT ============
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
