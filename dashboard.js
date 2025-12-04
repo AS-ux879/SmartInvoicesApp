@@ -1,5 +1,5 @@
 /* ============================
-   dashboard.js — FINAL PERFECT FIXED VERSION
+   dashboard.js — FINAL SHOW VERSION
    ============================ */
 
 import { auth, db, storage } from "./firebase.js";
@@ -15,8 +15,7 @@ import {
   deleteDoc,
   doc,
   query,
-  where,
-  orderBy
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
 import {
@@ -25,7 +24,7 @@ import {
   getDownloadURL
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
-// OCR KEY
+// OCR API Key
 const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
 let currentUser;
@@ -33,7 +32,7 @@ const invoiceList = document.getElementById("invoiceList");
 const totalSpentDisplay = document.getElementById("totalSpent");
 let chart;
 
-// التحقق من المستخدم
+// التأكد من تسجيل الدخول
 onAuthStateChanged(auth, async (user) => {
   if (!user) return (window.location.href = "login.html");
   currentUser = user;
@@ -41,13 +40,14 @@ onAuthStateChanged(auth, async (user) => {
   loadInvoices();
 });
 
-// OCR
+// OCR عند رفع الصورة
 document.getElementById("invoiceImage").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  document.getElementById("invoiceName").value = "جاري التحليل...";
-  document.getElementById("invoiceAmount").value = "";
+  invoiceName.value = "جاري قراءة الفاتورة...";
+  invoiceAmount.value = "";
+  invoiceDate.value = "";
 
   try {
     const tempRef = ref(storage, `ocr/${Date.now()}_${file.name}`);
@@ -56,8 +56,8 @@ document.getElementById("invoiceImage").addEventListener("change", async (event)
 
     const text = await detectText(url);
     fillFields(text);
-  } catch (err) {
-    alert("فشل استخراج النصوص");
+  } catch {
+    alert("فشل قراءة الصورة");
   }
 });
 
@@ -77,25 +77,20 @@ async function detectText(url) {
 
 function fillFields(text) {
   const amount = text.match(/\d+/)?.[0] || "";
-  document.getElementById("invoiceName").value = text.split("\n")[0] || "فاتورة";
-  document.getElementById("invoiceAmount").value = amount;
-  document.getElementById("invoiceDate").value = new Date().toISOString().split("T")[0];
+  invoiceName.value = text.split("\n")[0] || "فاتورة";
+  invoiceAmount.value = amount;
+  invoiceDate.value = new Date().toISOString().split("T")[0];
 }
 
 // إضافة الفاتورة
-document.getElementById("addBtn").addEventListener("click", addInvoice);
-
-async function addInvoice() {
+addBtn.addEventListener("click", async () => {
   const file = invoiceImage.files[0];
   const name = invoiceName.value.trim();
   const amount = invoiceAmount.value.trim();
   const date = invoiceDate.value.trim();
   const warranty = invoiceWarranty.value.trim();
 
-  if (!file || !name || !amount) {
-    alert("أكمل البيانات");
-    return;
-  }
+  if (!file || !name || !amount) return alert("يرجى تعبئة البيانات");
 
   try {
     const fileRef = ref(storage, `invoices/${currentUser.uid}/${Date.now()}_${file.name}`);
@@ -115,9 +110,9 @@ async function addInvoice() {
     invoiceForm.reset();
     loadInvoices();
   } catch {
-    alert("خطأ أثناء الحفظ");
+    alert("لم يتم حفظ الفاتورة");
   }
-}
+});
 
 // تحميل الفواتير
 async function loadInvoices() {
@@ -125,18 +120,13 @@ async function loadInvoices() {
   let total = 0;
   let values = [];
 
-  const q = query(
-    collection(db, "invoices"),
-    where("userId", "==", currentUser.uid),
-    orderBy("createdAt", "desc")
-  );
-  
+  const q = query(collection(db, "invoices"), where("userId", "==", currentUser.uid));
   const res = await getDocs(q);
 
   if (res.empty) {
-    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير</td></tr>";
+    invoiceList.innerHTML = "<tr><td colspan='6'>لا توجد فواتير بعد</td></tr>";
     totalSpentDisplay.textContent = "0 ريال";
-    updateChart([]);
+    updateChart([0]);
     return;
   }
 
@@ -150,34 +140,34 @@ async function loadInvoices() {
         <td>${data.name}</td>
         <td>${data.amount} ريال</td>
         <td>${data.date}</td>
-        <td>${data.warranty || '-'}</td>
+        <td>${data.warranty || "-"}</td>
         <td><a href="${data.imageUrl}" target="_blank">📄</a></td>
         <td><button onclick="deleteInvoice('${docSnap.id}')">🗑️</button></td>
       </tr>`;
   });
 
-  totalSpentDisplay.textContent = `${total} ريال`;
+  totalSpentDisplay.textContent = total + " ريال";
   updateChart(values);
 }
 
-// حذف
+// حذف الفاتورة
 window.deleteInvoice = async (id) => {
   await deleteDoc(doc(db, "invoices", id));
   loadInvoices();
 };
 
-// الرسم البياني
+// الرسم البياني للتحليل المالي
 function updateChart(values) {
   if (chart) chart.destroy();
-
   const ctx = document.getElementById("expenseChart");
+
   chart = new Chart(ctx, {
     type: "bar",
     data: {
-      labels: values.map((_, i) => `فاتورة ${i + 1}`),
+      labels: ["إجمالي المصروفات"],
       datasets: [{
         label: "ريال",
-        data: values,
+        data: [values.reduce((a, b) => a + b, 0)],
         backgroundColor: "#2b5b7b"
       }]
     },
@@ -185,7 +175,7 @@ function updateChart(values) {
   });
 }
 
-// خروج
+// تسجيل الخروج
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "login.html";
