@@ -26,7 +26,7 @@ import {
 
 
 // ===== ضعِ مفتاح Google Vision API الجديد هنا =====
-const VISION_API_KEY = "PUT_YOUR_NEW_KEY_HERE";
+const VISION_API_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
 
 let currentUser;
