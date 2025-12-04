@@ -4,37 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>📊 لوحة الفواتير - Smart Invoices</title>
-
-  <link rel="stylesheet" href="./styles.css">
-  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
 </head>
 
 <body>
 
   <div class="container">
-    <h1 id="title">📊 لوحة الفواتير</h1>
+    <h1>📊 لوحة الفواتير</h1>
     <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
 
+    <!-- إضافة الفاتورة -->
     <form id="invoiceForm">
-      <label for="invoiceImage">📷 صورة الفاتورة:</label>
-      <input type="file" id="invoiceImage" accept="image/*">
-
-      <label for="invoiceName">اسم الفاتورة:</label>
-      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال">
-
-      <label for="invoiceAmount">المبلغ (ريال):</label>
-      <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
-
-      <label for="invoiceDate">التاريخ:</label>
-      <input type="date" id="invoiceDate">
-
-      <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
-      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
-
-      <button type="submit">➕ إضافة الفاتورة</button>
+      <input type="file" id="invoiceImage" accept="image/*" required>
+      <input type="text" id="invoiceName" placeholder="اسم الفاتورة" required>
+      <input type="number" id="invoiceAmount" placeholder="المبلغ (ريال)" required>
+      <input type="date" id="invoiceDate" required>
+      <input type="number" id="invoiceWarranty" placeholder="الضمان (شهر)">
+      <button type="submit">➕ إضافة</button>
     </form>
 
-    <h2>🧾 قائمة الفواتير</h2>
+    <!-- قائمة الفواتير -->
     <table>
       <thead>
         <tr>
@@ -49,11 +39,19 @@
       <tbody id="invoiceList"></tbody>
     </table>
 
-    <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
+    <!-- التحليل المالي -->
+    <h2>📈 التحليل المالي</h2>
+    <canvas id="chart" width="600" height="380"></canvas>
+
+    <!-- تنبيهات الضمان -->
+    <h2>⏰ تنبيهات انتهاء الضمان</h2>
+    <ul id="warrantyList"></ul>
+
+    <button id="logoutBtn" class="logout-btn">🚪 تسجيل الخروج</button>
   </div>
 
-  <script type="module" src="./firebase.js"></script>
-  <script type="module" src="./dashboard.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="dashboard.js"></script>
 </body>
 </html>
