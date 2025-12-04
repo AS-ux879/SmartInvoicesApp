@@ -4,6 +4,8 @@ body {
   color: #333;
   text-align: center;
   direction: rtl;
+  margin: 0;
+  padding: 0;
 }
 
 .container {
@@ -18,6 +20,7 @@ body {
 /* تنسيق العناوين */
 h1, h2 {
   margin-bottom: 15px;
+  font-weight: 700;
 }
 
 /* الحقول */
@@ -31,10 +34,9 @@ label {
 
 input {
   width: 100%;
-  height: auto;
   padding: 12px;
-  font-size: 18px;
-  line-height: 1.4; /* حل مشكلة انقسام النص */
+  font-size: 17px;
+  line-height: 1.4;
   border: 1px solid #ccc;
   border-radius: 8px;
   box-sizing: border-box;
@@ -85,25 +87,33 @@ th {
   background-color: #2b5b7b;
   color: white;
   padding: 10px;
+  font-size: 16px;
 }
 
 td {
   padding: 10px;
   border: 1px solid #ddd;
+  font-size: 15px;
 }
 
 td a {
   text-decoration: none;
-  font-size: 20px;
+  font-size: 18px;
+  color: #2b5b7b;
 }
 
-/* تحسين عرض صفحة الجوال */
+/* للأجهزة الصغيرة */
 @media (max-width: 600px) {
   .container {
-    width: 90%;
+    width: 92%;
+    padding: 15px;
   }
 
   input, button {
-    font-size: 16px;
+    font-size: 15px;
+  }
+
+  td, th {
+    font-size: 14px;
   }
 }
