@@ -3,55 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>📊 لوحة الفواتير - Smart Invoices</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
+  <title>لوحة الفواتير</title>
+  <link rel="stylesheet" href="dashboard.css">
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>📊 لوحة الفواتير</h1>
-    <p><span id="greet">مرحبًا</span> <span id="userName"></span> 👋</p>
+<div class="container">
+  <h2>لوحة الفواتير 📊</h2>
+  <p id="userName">مرحباً</p>
 
-    <!-- إضافة الفاتورة -->
-    <form id="invoiceForm">
-      <input type="file" id="invoiceImage" accept="image/*" required>
-      <input type="text" id="invoiceName" placeholder="اسم الفاتورة" required>
-      <input type="number" id="invoiceAmount" placeholder="المبلغ (ريال)" required>
-      <input type="date" id="invoiceDate" required>
-      <input type="number" id="invoiceWarranty" placeholder="الضمان (شهر)">
-      <button type="submit">➕ إضافة</button>
-    </form>
+  <form id="invoiceForm">
+    <label>📸 صورة الفاتورة:</label>
+    <input type="file" id="invoiceImage" accept="image/*">
 
-    <!-- قائمة الفواتير -->
-    <table>
-      <thead>
-        <tr>
-          <th>الاسم</th>
-          <th>المبلغ</th>
-          <th>التاريخ</th>
-          <th>الضمان</th>
-          <th>عرض</th>
-          <th>حذف</th>
-        </tr>
-      </thead>
-      <tbody id="invoiceList"></tbody>
-    </table>
+    <label>اسم الفاتورة:</label>
+    <input type="text" id="invoiceName" placeholder="جار تحليل الصورة…">
 
-    <!-- التحليل المالي -->
-    <h2>📈 التحليل المالي</h2>
-    <canvas id="chart" width="600" height="380"></canvas>
+    <label>المبلغ (ريال):</label>
+    <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
 
-    <!-- تنبيهات الضمان -->
-    <h2>⏰ تنبيهات انتهاء الضمان</h2>
-    <ul id="warrantyList"></ul>
+    <label>التاريخ:</label>
+    <input type="date" id="invoiceDate">
 
-    <button id="logoutBtn" class="logout-btn">🚪 تسجيل الخروج</button>
-  </div>
+    <label>مدة الضمان (بالأشهر):</label>
+    <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="dashboard.js"></script>
+    <button type="submit" id="addBtn">إضافة الفاتورة ➕</button>
+  </form>
+
+  <h3>قائمة الفواتير 🧾</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>الاسم</th>
+        <th>المبلغ</th>
+        <th>التاريخ</th>
+        <th>الضمان</th>
+        <th>عرض</th>
+        <th>حذف</th>
+      </tr>
+    </thead>
+    <tbody id="invoiceList">
+      <tr><td colspan="6">لا توجد فواتير بعد</td></tr>
+    </tbody>
+  </table>
+
+  <!-- التحليل المالي هنا -->
+  <h3>📈 التحليل المالي</h3>
+  <canvas id="chart"></canvas>
+
+  <button id="logoutBtn" class="logout-btn">🧷 تسجيل الخروج</button>
+</div>
+
+<script src="dashboard.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </body>
 </html>
