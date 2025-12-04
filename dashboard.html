@@ -1,60 +1,89 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة الفواتير</title>
-  <link rel="stylesheet" href="dashboard.css">
+  <title>📊 لوحة الفواتير - Smart Invoices</title>
+
+  <link rel="stylesheet" href="./styles.css">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#264653">
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js");
+    }
+  </script>
+
 </head>
 
 <body>
 
-<div class="container">
-  <h2>لوحة الفواتير 📊</h2>
-  <p id="userName">مرحباً</p>
+  <div class="container">
 
-  <form id="invoiceForm">
-    <label>📸 صورة الفاتورة:</label>
-    <input type="file" id="invoiceImage" accept="image/*">
+    <h1>📊 لوحة الفواتير</h1>
+    <p><span id="greet">مرحباً</span> <span id="userName">...</span> 👋</p>
 
-    <label>اسم الفاتورة:</label>
-    <input type="text" id="invoiceName" placeholder="جار تحليل الصورة…">
 
-    <label>المبلغ (ريال):</label>
-    <input type="number" id="invoiceAmount" placeholder="مثال: 2500">
+    <!-- نموذج إضافة الفاتورة -->
+    <form id="invoiceForm">
 
-    <label>التاريخ:</label>
-    <input type="date" id="invoiceDate">
+      <label for="invoiceImage">📷 صورة الفاتورة:</label>
+      <input type="file" id="invoiceImage" accept="image/*" required>
 
-    <label>مدة الضمان (بالأشهر):</label>
-    <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
+      <label for="invoiceName">اسم الفاتورة:</label>
+      <input type="text" id="invoiceName" placeholder="مثال: فاتورة جوال" required>
 
-    <button type="submit">إضافة الفاتورة ➕</button>
-  </form>
+      <label for="invoiceAmount">المبلغ (ريال):</label>
+      <input type="number" id="invoiceAmount" placeholder="مثال: 2500" required>
 
-  <h3>قائمة الفواتير 🧾</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>الاسم</th>
-        <th>المبلغ</th>
-        <th>التاريخ</th>
-        <th>الضمان</th>
-        <th>عرض</th>
-        <th>حذف</th>
-      </tr>
-    </thead>
-    <tbody id="invoiceList"></tbody>
-  </table>
+      <label for="invoiceDate">التاريخ:</label>
+      <input type="date" id="invoiceDate" required>
 
-  <h3>📈 التحليل المالي</h3>
-  <canvas id="chart"></canvas>
+      <label for="invoiceWarranty">مدة الضمان (بالأشهر):</label>
+      <input type="number" id="invoiceWarranty" placeholder="مثال: 12">
 
-  <button id="logoutBtn" class="logout-btn">تسجيل الخروج 🔐</button>
-</div>
+      <button type="submit" id="addBtn">➕ إضافة الفاتورة</button>
+    </form>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="dashboard.js"></script>
+
+    <h2>🧾 قائمة الفواتير</h2>
+
+    <table border="1">
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>المبلغ</th>
+          <th>التاريخ</th>
+          <th>الضمان</th>
+          <th>الفاتورة</th>
+          <th>إجراء</th>
+        </tr>
+      </thead>
+      <tbody id="invoiceList"></tbody>
+    </table>
+
+
+    <!-- التحليل المالي -->
+    <h2>💰 التحليل المالي</h2>
+    <p>إجمالي المصروفات: <strong id="totalSpent">0 ريال</strong></p>
+
+    <div id="chartContainer">
+      <canvas id="expenseChart"></canvas>
+    </div>
+
+
+    <button class="logout-btn" id="logoutBtn">🚪 تسجيل الخروج</button>
+
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Firebase + App Logic -->
+  <script type="module" src="./firebase.js" defer></script>
+  <script type="module" src="./dashboard.js" defer></script>
 
 </body>
 </html>
