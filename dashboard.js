@@ -21,7 +21,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
 
 // Google Vision API Key — يجب تحديثه بمفتاحك الصحيح
-const VISION_KEY = "ضع مفتاح Vision API الذي أعطيتني صورته هنا";
+const VISION_KEY = "AIzaSyDEzLQRjRCn60WsUsY-aEFBKZ4Vy1iJceA";
 
 let currentUser;
 const invoiceList = document.getElementById("invoiceList");
